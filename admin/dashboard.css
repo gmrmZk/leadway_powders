@@ -3595,14 +3595,20 @@ body.sidebar-drawer-active {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .product-category-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
   font-size: 11px;
   font-weight: 600;
   color: var(--accent-dark);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  line-height: 1.4;
+  white-space: normal;
   margin-bottom: 6px;
 }
 
@@ -3612,6 +3618,7 @@ body.sidebar-drawer-active {
   font-weight: 700;
   color: var(--ink);
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .product-card-price {
@@ -3623,8 +3630,9 @@ body.sidebar-drawer-active {
 
 .product-stock-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
   padding-top: 14px;
   border-top: 1px solid var(--dash-border);
   margin-top: auto;
@@ -3632,12 +3640,15 @@ body.sidebar-drawer-active {
 
 .product-stock-badge {
   display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
   align-items: center;
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 6px;
+  white-space: normal;
 }
 
 .stock-in {
@@ -3656,10 +3667,10 @@ body.sidebar-drawer-active {
 }
 
 .product-stock-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
 }
 
 .stock-btn {
@@ -3684,8 +3695,9 @@ body.sidebar-drawer-active {
 }
 
 .prod-action-btn {
+  min-width: 0;
   height: 28px;
-  padding: 0 11px;
+  padding: 0 6px;
   font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -3761,16 +3773,8 @@ body.sidebar-drawer-active {
 
 /* Responsive product actions */
 @media (max-width: 680px) {
-  .product-card-stock {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
   .product-stock-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
     gap: 6px;
-    width: 100%;
   }
   .prod-action-btn {
     width: 100%;

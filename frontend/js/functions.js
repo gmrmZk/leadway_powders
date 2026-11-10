@@ -91,7 +91,7 @@ function getVisibleProducts() {
   return filteredProducts;
 }
 
-function createProductCard(product) {
+function createProductCard(product, { linkToShopCategory = false } = {}) {
   const stock = Number(product.stock || 0);
   const category = getProductCategory(product);
   const article = document.createElement('article');
@@ -99,9 +99,20 @@ function createProductCard(product) {
   article.id = String(product.id);
   article.dataset.category = category.toLowerCase();
 
+  const productHref = linkToShopCategory
+    ? `./components/shop.html?category=${encodeURIComponent(category)}#catalog`
+    : `./product.html?id=${encodeURIComponent(product.id)}`;
+
+  if (linkToShopCategory) {
+    article.addEventListener('click', (event) => {
+      if (event.target.closest('a, button')) return;
+      window.location.href = productHref;
+    });
+  }
+
   const visual = document.createElement('a');
   visual.className = 'product-visual';
-  visual.href = `product.html?id=${encodeURIComponent(product.id)}`;
+  visual.href = productHref;
 
   const image = document.createElement('img');
   image.src = product.image_url || '';
@@ -172,7 +183,7 @@ function renderHomeProducts(newArrivalsGrid) {
 
   homeGrid.replaceChildren();
   shopProducts.slice(0, 3).forEach((product) => {
-    homeGrid.appendChild(createProductCard(product));
+    homeGrid.appendChild(createProductCard(product, { linkToShopCategory: true }));
   });
   if (shopProducts.length === 0) {
     const empty = document.createElement('p');
@@ -197,6 +208,23 @@ function initShopFilters() {
     document.querySelectorAll(
       '.filter-link'
     );
+
+  const requestedCategory =
+    new URLSearchParams(window.location.search).get('category');
+  const requestedFilter = Array.from(filterButtons).find(
+    (button) => button.dataset.filter === requestedCategory
+  );
+
+  currentFilter = requestedFilter
+    ? requestedFilter.dataset.filter || 'all'
+    : 'all';
+  filterButtons.forEach((button) => {
+    button.classList.toggle(
+      'active',
+      button === requestedFilter ||
+        (!requestedFilter && button.dataset.filter === 'all')
+    );
+  });
 
   filterButtons.forEach((button) => {
     button.addEventListener(
