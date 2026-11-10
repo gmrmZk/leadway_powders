@@ -74,8 +74,8 @@ window.renderOrderDrawer = function(order) {
   if (trackingLocationEl) {
     trackingLocationEl.textContent = order.trackingLocation ||
       (normalizedStatus === 'accepted at hub'
-        ? 'Velora Logistics Hub, Airport Industria'
-        : 'Velora Fulfillment Centre');
+        ? 'Leadway Powders Dispatch Hub'
+        : 'Leadway Powders Dispatch Centre');
   }
   if (deliveryProvinceEl) deliveryProvinceEl.textContent = order.shipping?.province || 'Not recorded';
   if (assignedDriverEl) {
@@ -190,7 +190,7 @@ window.renderOrderDrawer = function(order) {
   if (whatsappBtn) {
     whatsappBtn.onclick = () => {
       const cleanPhone = order.customer.phone.replace(/[^0-9]/g, '');
-      const text = encodeURIComponent(`Hi ${order.customer.fullName}, Velora Studio concierge here regarding Order ${order.id}.`);
+      const text = encodeURIComponent(`Hi ${order.customer.fullName}, Leadway Powders here regarding Order ${order.id}.`);
       window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
     };
   }
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnTrack.disabled = true;
       try {
         await submitDispatchAction(order, 'accept');
-        window.showToast(`Order ${order.orderNumber} accepted at Velora Logistics Hub, Airport Industria.`);
+        window.showToast(`Order ${order.orderNumber} accepted at the Leadway Powders Dispatch Hub.`);
       } catch (error) {
         window.showToast(error.message || 'Unable to accept order.');
       } finally {

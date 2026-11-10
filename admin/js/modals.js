@@ -241,23 +241,23 @@ window.initModals = function() {
     if (btnSample) {
       btnSample.addEventListener('click', () => {
         const samplePiece = {
-          title: 'Heavyweight Boxy Vintage Tee',
-          sku: 'VEL-TEE-9021',
+          title: 'Classic Milk Tea Powder',
+          sku: 'LWP-MTP-001',
           barcode: '6009876543210',
-          eyebrow: 'Core Streetwear Essentials',
-          category: 'T-Shirts',
+          eyebrow: 'Beverage Powders',
+          category: 'Milk Tea Powder',
           price: '550',
           comparePrice: '690',
           costPrice: '180',
           stock: '45',
           status: 'active',
-          img: 'https://images.pexels.com/photos/8532616/pexels-photo-8532616.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-          description: 'Constructed from premium 280 GSM combed organic cotton with a dry hand feel. Features drop shoulders, tight ribbed crew collar, and blind-stitch hems tailored for a relaxed architectural drape.',
-          sizes: 'S, M, L, XL',
-          fit: 'Relaxed Oversized Boxy',
-          details: '100% Combed Organic Cotton, 280 GSM Heavyweight Jersey, Pre-shrunk, Silicone garment wash',
+          img: '',
+          description: 'A versatile milk tea powder for beverage service.',
+          sizes: '',
+          fit: '',
+          details: 'Food-service ingredient powder.',
           delivery: 'Nationwide 2-4 business day courier across South Africa. Free delivery on orders over R800.',
-          care: 'Machine wash cold inside out with like colours. Hang dry in shade. Do not iron directly on graphics.'
+          care: 'Store according to the product packaging instructions.'
         };
 
         const setVal = (id, val) => {
@@ -300,7 +300,7 @@ window.initModals = function() {
         });
 
         if (typeof window.showToast === 'function') {
-          window.showToast('Autofilled sample T-Shirt product.');
+          window.showToast('Autofilled sample Milk Tea Powder product.');
         }
       });
     }
@@ -501,4 +501,3 @@ if (document.readyState === 'loading') {
 } else {
   window.initModals();
 }
-

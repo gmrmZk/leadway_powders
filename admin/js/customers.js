@@ -1,6 +1,6 @@
 /**
  * Customers Section Controller (js/customers.js)
- * Fetches real registered clients from the Velora database via /api/users
+ * Fetches registered clients from the Leadway Powders database via /api/users
  * Pure DOM implementation with NO innerHTML.
  */
 
@@ -170,7 +170,7 @@
           email: u.email || '—',
           phone: u.phone || '—',
           city: location,
-          tier: u.member_tier || 'Velora Client',
+          tier: u.member_tier || 'Leadway Powders Client',
           totalOrders: totalOrders,
           lifetimeSpend: lifetimeSpend,
           lastActive: formatCustomerDate(u.updated_at || u.created_at),
@@ -196,7 +196,7 @@
         window.showToast(`Synced ${realCustomers.length} clients from database.`);
       }
     } catch (err) {
-      console.error('[Velora Admin] Error fetching users from database:', err);
+      console.error('[Leadway Powders Admin] Error fetching users from database:', err);
       if (showToastFeedback && typeof window.showToast === 'function') {
         window.showToast('Could not sync with database: ' + err.message);
       }
@@ -473,7 +473,7 @@
             window.showToast(`${cust.name} deleted.`);
           }
         } catch (error) {
-          console.error('[Velora Admin] Error deleting customer:', error);
+          console.error('[Leadway Powders Admin] Error deleting customer:', error);
           if (typeof window.showToast === 'function') {
             window.showToast(error.message || 'Unable to delete customer.');
           }

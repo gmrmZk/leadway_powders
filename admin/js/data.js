@@ -49,8 +49,8 @@ function saveStorage(key, val) {
 }
 
 const INITIAL_SETTINGS = {
-  storeName: 'VELORA E-Commerce Studio',
-  supportEmail: 'studio@velora.co.za',
+  storeName: 'Leadway Powders',
+  supportEmail: '',
   phone: '+27 11 883 0000',
   address: 'Nelson Mandela Square, Sandton, Johannesburg, 2196, South Africa',
   currency: 'ZAR',

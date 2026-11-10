@@ -29,7 +29,7 @@
 
         a.style.display = 'none';
         a.href = url;
-        a.download = 'velora-project.zip';
+        a.download = 'leadway-powders-admin.zip';
 
         document.body.appendChild(a);
         a.click();
@@ -44,20 +44,20 @@
 
         if (typeof window.showToast === 'function') {
           window.showToast(
-            'Velora Project ZIP downloaded successfully!'
+            'Leadway Powders admin ZIP downloaded successfully!'
           );
         }
       })
       .catch(err => {
         console.warn(
-          '[Velora Download] Blob fetch error, trying direct link:',
+          '[Leadway Powders Download] Blob fetch error, trying direct link:',
           err
         );
 
         const fallbackA = document.createElement('a');
 
         fallbackA.href = downloadPath;
-        fallbackA.download = 'velora-project.zip';
+        fallbackA.download = 'leadway-powders-admin.zip';
         fallbackA.target = '_blank';
 
         document.body.appendChild(fallbackA);
@@ -80,7 +80,7 @@
 
     if (!authScreen) {
       console.warn(
-        '[Velora Admin] Authentication screen not found.'
+        '[Leadway Powders Admin] Authentication screen not found.'
       );
 
       return;

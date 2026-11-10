@@ -314,7 +314,7 @@ const SEED_NOTIFICATIONS = [
     backendType: 'user_registered',
     icon: '👤',
     title: 'VIP Client Registered',
-    description: 'Jan Kokobane registered for Velora VIP Privilege with nationwide courier access.',
+    description: 'Jan Kokobane registered for Leadway Powders customer benefits with nationwide courier access.',
     time: '30 Sept 2026, 11:20',
     unread: false,
     cleared: false,

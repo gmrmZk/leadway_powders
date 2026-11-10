@@ -139,7 +139,7 @@ html, body {
   height: auto;
   box-sizing: border-box;
   padding: 6px;
-  background: #f6f5f1;
+  background: transparent;
   border-radius: 4px;
 }
 
@@ -1842,8 +1842,8 @@ body.sidebar-drawer-active {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(135deg, rgba(6, 4, 10, 0.95) 0%, rgba(10, 7, 14, 0.94) 45%, rgba(6, 4, 10, 0.96) 100%),
-    url('./images/authBackground.jpg');
+    linear-gradient(135deg, rgba(6, 4, 10, 0.45) 0%, rgba(10, 7, 14, 0.5) 45%, rgba(6, 4, 10, 0.55) 100%),
+    url('https://www.allwinfood.com/storage/media/products/products%20banner/products-06.jpg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -1943,7 +1943,7 @@ body.sidebar-drawer-active {
   object-fit: contain;
   box-sizing: border-box;
   padding: 8px;
-  background: #f6f5f1;
+  background: transparent;
   border-radius: 4px;
 }
 
@@ -6463,8 +6463,8 @@ html.velora-authenticated #dashboardViewport {
   width: 100vw;
   background-color: #060408;
   background-image:
-    linear-gradient(135deg, rgba(6, 4, 10, 0.95) 0%, rgba(10, 7, 14, 0.94) 45%, rgba(6, 4, 10, 0.96) 100%),
-    url('./images/authBackground.jpg');
+    linear-gradient(135deg, rgba(6, 4, 10, 0.45) 0%, rgba(10, 7, 14, 0.5) 45%, rgba(6, 4, 10, 0.55) 100%),
+    url('https://www.allwinfood.com/storage/media/products/products%20banner/products-06.jpg');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -6510,8 +6510,8 @@ html.velora-authenticated #dashboardViewport {
   height: 100%;
   background-color: #060408;
   background-image:
-    linear-gradient(135deg, rgba(6, 4, 10, 0.95) 0%, rgba(10, 7, 14, 0.94) 45%, rgba(6, 4, 10, 0.96) 100%),
-    url('./images/authBackground.jpg'),
+    linear-gradient(135deg, rgba(6, 4, 10, 0.45) 0%, rgba(10, 7, 14, 0.5) 45%, rgba(6, 4, 10, 0.55) 100%),
+    url('https://www.allwinfood.com/storage/media/products/products%20banner/products-06.jpg'),
     radial-gradient(ellipse at 50% 40%, #0f0c18 0%, #060408 80%);
   background-size: cover;
   background-position: center center;

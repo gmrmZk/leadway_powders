@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Velora Store Management Dashboard — Real-time order fulfillment, revenue analytics, customer tracking, and stock inventory.">
-  <title>Velora Operations — Store Management Dashboard</title>
-  <link rel="icon" type="image/png" href="../frontend/images/LandingPageImages/favicon.png">
+    content="Leadway Powders admin portal for managing orders, customers, products, and stock inventory.">
+  <title>Leadway Powders — Admin Portal</title>
+  <link rel="icon" type="image/png" href="./images/favicon.png?v=20261110">
 
   <script>
     (function () {
@@ -189,7 +189,7 @@
             localStorage.setItem('velora_admin_user', JSON.stringify({
               id: 1,
               full_name: 'Kristina Evans',
-              email: 'kris.evans@velora.co.za',
+              email: 'admin@example.com',
               role: 'Studio Director'
             }));
           }
@@ -279,7 +279,7 @@
 
     if (!window.showToast) {
       window.showToast = function (msg, duration) {
-        _queueOrRun('_realShowToast', () => console.log('[Velora Toast]', msg), msg, duration);
+        _queueOrRun('_realShowToast', () => console.log('[Leadway Powders Toast]', msg), msg, duration);
       };
     }
 
@@ -363,7 +363,7 @@
           const a = document.createElement('a');
           a.style.display = 'none';
           a.href = downloadPath;
-          a.download = 'velora-project.zip';
+          a.download = 'leadway-powders-admin.zip';
           document.body.appendChild(a);
           a.click();
           setTimeout(() => {
@@ -388,7 +388,7 @@
       <header class="kinder-top-bar">
         <div class="kinder-brand-logo-group">
           <div class="kinder-brand-text">
-            <img src="../frontend/images/LandingPageImages/logo.png" alt="LEADWAY POWDERS" class="admin-brand-logo">
+            <img src="./images/logo.png" alt="LEADWAY POWDERS" class="admin-brand-logo">
           </div>
         </div>
         <div class="kinder-top-actions">
@@ -404,11 +404,12 @@
       </header>
 
       <main class="kinder-main-container">
-        <section class="kinder-editorial-hero" aria-label="Velora Studio Overview">
-          <h2 class="kinder-hero-headline">High Fashion & Retail Management Orchestration</h2>
+        <section class="kinder-editorial-hero" aria-label="Leadway Powders Overview">
+          <h2 class="kinder-hero-headline">Food &amp; Beverage Ingredient Sourcing</h2>
           <p class="kinder-hero-desc">
-            Unified dispatch management, live South African ZAR settlement via Ozow & SnapScan, real-time catalog stock
-            control, and bespoke client concierge workflows.
+            Leadway Powders connects cafés, restaurants, bubble tea shops, food-service businesses, and distributors
+            with a diverse range of beverage, dessert, and food ingredient powders. We work with established
+            manufacturing partners to provide quality-focused products and flexible solutions for your commercial needs.
           </p>
         </section>
 
@@ -458,7 +459,7 @@
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                   </svg>
 
-                  <input type="email" id="kinderEmail" class="kinder-underline-input" placeholder="name@velora.co.za"
+                  <input type="email" id="kinderEmail" class="kinder-underline-input" placeholder="name@company.com"
                     autocomplete="off">
                 </div>
               </div>
@@ -530,7 +531,7 @@
             </form>
 
             <div class="kinder-footer-text">
-              Velora Central Operations • High Fashion & Luxury Atelier, Sandton
+              Leadway Powders • Food & Beverage Ingredient Sourcing
             </div>
           </div>
         </section>
@@ -550,7 +551,7 @@
             style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--dash-sidebar-line); padding-bottom: 16px; margin-bottom: 8px;">
             <a href="./index.html" class="sidebar-brand" style="border-bottom: none; padding: 0;"
               aria-label="LEADWAY POWDERS home">
-              <span class="brand"><img src="../frontend/images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></span>
+              <span class="brand"><img src="./logo.png?v=20261110" alt="LEADWAY POWDERS"></span>
               <span class="brand-subtitle">Operations Portal</span>
             </a>
             <button type="button" class="sidebar-mobile-close-btn" id="sidebarMobileCloseBtn"
@@ -926,7 +927,7 @@
                     style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--dash-bg); border-radius: 10px;">
                     <div>
                       <div style="font-weight: 600; font-size: 13.5px;">In-Transit Shipments</div>
-                      <div style="font-size: 11.5px; color: var(--muted);">En route via Velora Courier</div>
+                      <div style="font-size: 11.5px; color: var(--muted);">En route via our courier partners</div>
                     </div>
                     <button type="button" class="drawer-btn drawer-btn-dark"
                       style="flex: initial; padding: 6px 14px; font-size: 12px;"
@@ -1344,7 +1345,7 @@
                   </div>
                   <select class="filter-select" id="customerTierFilter">
                     <option value="all">All Tiers</option>
-                    <option value="Velora Client">Velora Client</option>
+                    <option value="Leadway Powders Client">Leadway Powders Client</option>
                     <option value="VIP Privilege">VIP Privilege</option>
                     <option value="Gold Member">Gold Member</option>
                     <option value="Standard">Standard</option>
@@ -1614,13 +1615,13 @@
                       <div class="settings-field-group">
                         <label class="settings-label" for="settingStoreName">Studio Store Name</label>
                         <input type="text" id="settingStoreName" class="settings-input"
-                          value="VELORA E-Commerce Studio">
+                          value="Leadway Powders">
                       </div>
                       <div class="settings-field-row">
                         <div class="settings-field-group">
                           <label class="settings-label" for="settingSupportEmail">Support Desk Email</label>
                           <input type="email" id="settingSupportEmail" class="settings-input"
-                            value="studio@velora.co.za">
+                            value="">
                         </div>
                         <div class="settings-field-group">
                           <label class="settings-label" for="settingPhone">Dispatch Hotline</label>
@@ -1783,7 +1784,7 @@
                           <select id="settingCourierPartner" class="settings-select">
                             <option value="The Courier Guy" selected>The Courier Guy (Locker & Door-to-Door)</option>
                             <option value="DHL Express SA">DHL Express South Africa</option>
-                            <option value="Velora Studio Courier">Velora Dedicated Studio Dispatch</option>
+                            <option value="Other">Other Courier Partner</option>
                           </select>
                         </div>
                         <div class="settings-field-group">
@@ -1948,7 +1949,7 @@
                       onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\' viewBox=\'0 0 48 48\'%3E%3Ccircle cx=\'24\' cy=\'24\' r=\'24\' fill=\'%23232030\'/%3E%3Ctext x=\'24\' y=\'29\' fill=\'%23c9a57a\' font-size=\'16\' text-anchor=\'middle\' font-family=\'sans-serif\'%3EV%3C/text%3E%3C/svg%3E'">
                     <div class="drawer-customer-info">
                       <div class="drawer-customer-name" id="drawerCustomerName">Customer Name</div>
-                      <div class="drawer-customer-meta">Velora Registered Client</div>
+                      <div class="drawer-customer-meta">Leadway Powders Client</div>
                     </div>
                     <div class="drawer-contact-actions">
                       <a href="mailto:client@example.com" class="contact-action-btn" id="drawerEmailLink" title="Send Email">
@@ -1979,14 +1980,14 @@
                   </div>
 
                   <div class="drawer-logistics-box">
-                    <div class="drawer-logistics-title">Velora Logistics Waybill</div>
+                    <div class="drawer-logistics-title">Leadway Powders Delivery Waybill</div>
                     <div class="drawer-logistics-trk" id="drawerTrackingNumber">TRK-ZA-000000</div>
                   </div>
 
                   <div class="dispatch-details-group">
                     <div class="dispatch-info-row">
                       <span class="dispatch-label">Fulfillment Hub:</span>
-                      <span class="dispatch-val" id="drawerTrackingLocation">Velora Fulfillment Centre</span>
+                      <span class="dispatch-val" id="drawerTrackingLocation">Leadway Powders Dispatch Centre</span>
                     </div>
                     <div class="dispatch-info-row">
                       <span class="dispatch-label">Delivery Province:</span>
@@ -2041,7 +2042,7 @@
       <div class="studio-modal-title-group">
         <h3 class="studio-modal-heading" id="productModalTitle">Add New Product</h3>
         <p class="studio-modal-subheading" id="productModalSubheading">
-          Fill in the details to publish a new piece to your store catalog.
+          Add ingredient details, pricing, and stock information for your catalog.
         </p>
       </div>
 
@@ -2063,14 +2064,14 @@
           <section class="studio-form-card">
             <div class="studio-card-simple-title">
               <h4>Basic Information</h4>
-              <p>Primary title, category and collection</p>
+              <p>Product name, ingredient category, and brand</p>
             </div>
 
             <div class="studio-input-group">
               <label for="newProdTitle" class="studio-label">
                 Product Name / Title <span class="studio-req">*</span>
               </label>
-              <input type="text" id="newProdTitle" class="studio-input" placeholder="e.g. Vintage Heavyweight Boxy T-Shirt">
+              <input type="text" id="newProdTitle" class="studio-input" placeholder="e.g. Classic Milk Tea Powder">
             </div>
 
             <div class="studio-grid-2">
@@ -2080,23 +2081,27 @@
                 </label>
                 <div class="studio-select-wrapper">
                   <select id="newProdCategory" class="studio-select">
-                    <option value="T-Shirts" selected>T-Shirts</option>
-                    <option value="Jeans">Jeans</option>
-                    <option value="Shirts">Shirts</option>
-                    <option value="Hoodies & Sweaters">Hoodies &amp; Sweaters</option>
-                    <option value="Jackets & Outerwear">Jackets &amp; Outerwear</option>
-                    <option value="Trousers & Pants">Trousers &amp; Pants</option>
-                    <option value="Bags">Bags</option>
-                    <option value="Footwear">Footwear</option>
-                    <option value="Accessories">Accessories</option>
-                    <option value="Objects">Objects &amp; Lifestyle</option>
+                    <option value="Milk Tea Powder" selected>Milk Tea Powder</option>
+                    <option value="Milk Foam Powder">Milk Foam Powder</option>
+                    <option value="Fruit Juice Powder">Fruit Juice Powder</option>
+                    <option value="Beverage Flavor Powder">Beverage Flavor Powder</option>
+                    <option value="Soft Ice Cream Powder">Soft Ice Cream Powder</option>
+                    <option value="Milkshake Powder">Milkshake Powder</option>
+                    <option value="Smoothie Powder">Smoothie Powder</option>
+                    <option value="Snow Ice Powder">Snow Ice Powder</option>
+                    <option value="Pudding Powder">Pudding Powder</option>
+                    <option value="Jelly Powder">Jelly Powder</option>
+                    <option value="Cookie Crumbles">Cookie Crumbles</option>
+                    <option value="Premix Powder">Premix Powder</option>
+                    <option value="Waffling Powder">Waffling Powder</option>
+                    <option value="Tiger Powder">Tiger Powder</option>
                   </select>
                 </div>
               </div>
 
               <div class="studio-input-group">
-                <label for="newProdEyebrow" class="studio-label">Collection / Brand</label>
-                <input type="text" id="newProdEyebrow" class="studio-input" placeholder="e.g. Velora Essentials">
+                <label for="newProdEyebrow" class="studio-label">Brand / Product Range</label>
+                <input type="text" id="newProdEyebrow" class="studio-input" placeholder="e.g. Leadway Beverage Powders">
               </div>
             </div>
           </section>
@@ -2105,17 +2110,17 @@
           <section class="studio-form-card">
             <div class="studio-card-simple-title">
               <h4>Pricing &amp; Inventory</h4>
-              <p>Retail pricing and available warehouse stock</p>
+              <p>Set product pricing and available stock</p>
             </div>
 
             <div class="studio-grid-3">
               <div class="studio-input-group">
                 <label for="newProdPrice" class="studio-label">
-                  Retail Price (ZAR) <span class="studio-req">*</span>
+                  Selling Price (ZAR) <span class="studio-req">*</span>
                 </label>
                 <div class="studio-prefix-input">
                   <span class="studio-input-prefix">R</span>
-                  <input type="number" id="newProdPrice" class="studio-input studio-input-with-prefix" placeholder="450" min="0" step="0.01">
+                  <input type="number" id="newProdPrice" class="studio-input studio-input-with-prefix" placeholder="e.g. 250" min="0" step="0.01">
                 </div>
               </div>
 
@@ -2123,7 +2128,7 @@
                 <label for="newProdComparePrice" class="studio-label">Compare-at Price (ZAR)</label>
                 <div class="studio-prefix-input">
                   <span class="studio-input-prefix">R</span>
-                  <input type="number" id="newProdComparePrice" class="studio-input studio-input-with-prefix" placeholder="590" min="0" step="0.01">
+                  <input type="number" id="newProdComparePrice" class="studio-input studio-input-with-prefix" placeholder="e.g. 280" min="0" step="0.01">
                 </div>
               </div>
 
@@ -2131,7 +2136,7 @@
                 <label for="newProdCostPrice" class="studio-label">Cost per Item (ZAR)</label>
                 <div class="studio-prefix-input">
                   <span class="studio-input-prefix">R</span>
-                  <input type="number" id="newProdCostPrice" class="studio-input studio-input-with-prefix" placeholder="180" min="0" step="0.01">
+                  <input type="number" id="newProdCostPrice" class="studio-input studio-input-with-prefix" placeholder="e.g. 160" min="0" step="0.01">
                 </div>
               </div>
             </div>
@@ -2141,7 +2146,7 @@
                 <label for="newProdStock" class="studio-label">
                   Stock Quantity <span class="studio-req">*</span>
                 </label>
-                <input type="number" id="newProdStock" class="studio-input" placeholder="15" min="0">
+                <input type="number" id="newProdStock" class="studio-input" placeholder="e.g. 50" min="0">
               </div>
 
               <div class="studio-input-group">
@@ -2371,48 +2376,48 @@
           <!-- Section 4: Variants, Specifications & Details -->
           <section class="studio-form-card">
             <div class="studio-card-simple-title">
-              <h4>Variants &amp; Details</h4>
-              <p>Sizes, colors, silhouette and care instructions</p>
+              <h4>Product Details &amp; Applications</h4>
+              <p>Pack sizes, flavors, product specifications, and handling information</p>
             </div>
 
             <div class="studio-grid-2">
               <div class="studio-input-group">
-                <label for="newProdSizes" class="studio-label">Available Sizes</label>
-                <input type="text" id="newProdSizes" class="studio-input" placeholder="e.g. S, M, L, XL or 28, 30, 32">
+                <label for="newProdSizes" class="studio-label">Pack Sizes</label>
+                <input type="text" id="newProdSizes" class="studio-input" placeholder="e.g. 500 g, 1 kg, 5 kg">
               </div>
 
               <div class="studio-input-group">
-                <label for="newProdColors" class="studio-label">Available Colors</label>
-                <input type="text" id="newProdColors" class="studio-input" placeholder="e.g. Washed Black, Vintage White">
+                <label for="newProdColors" class="studio-label">Flavor / Variety</label>
+                <input type="text" id="newProdColors" class="studio-input" placeholder="e.g. Original, Taro, Matcha">
               </div>
             </div>
 
             <div class="studio-grid-2" style="margin-top: 14px;">
               <div class="studio-input-group">
-                <label for="newProdFit" class="studio-label">Fit / Silhouette</label>
-                <input type="text" id="newProdFit" class="studio-input" placeholder="e.g. Boxy Oversized Fit">
+                <label for="newProdFit" class="studio-label">Preparation / Application</label>
+                <input type="text" id="newProdFit" class="studio-input" placeholder="e.g. Mix with water or milk for beverages">
               </div>
 
               <div class="studio-input-group">
-                <label for="newProdDetails" class="studio-label">Fabric &amp; Specifications</label>
-                <input type="text" id="newProdDetails" class="studio-input" placeholder="e.g. 100% Combed Cotton (240 GSM)">
+                <label for="newProdDetails" class="studio-label">Product Specifications</label>
+                <input type="text" id="newProdDetails" class="studio-input" placeholder="e.g. Ingredients, net weight, and product format">
               </div>
             </div>
 
             <div class="studio-input-group" style="margin-top: 14px;">
               <label for="newProdDescription" class="studio-label">Product Description</label>
-              <textarea id="newProdDescription" class="studio-textarea" rows="3" placeholder="Describe the product styling, fit, texture, and everyday versatility..."></textarea>
+              <textarea id="newProdDescription" class="studio-textarea" rows="3" placeholder="Describe the ingredient, flavor, uses, and benefits for food-service or beverage applications..."></textarea>
             </div>
 
             <div class="studio-grid-2" style="margin-top: 14px;">
               <div class="studio-input-group">
-                <label for="newProdCare" class="studio-label">Care Instructions</label>
-                <textarea id="newProdCare" class="studio-textarea studio-textarea-compact" rows="2" placeholder="e.g. Cold wash with like colors. Hang dry."></textarea>
+                <label for="newProdCare" class="studio-label">Storage &amp; Handling</label>
+                <textarea id="newProdCare" class="studio-textarea studio-textarea-compact" rows="2" placeholder="e.g. Store sealed in a cool, dry place."></textarea>
               </div>
 
               <div class="studio-input-group">
-                <label for="newProdDelivery" class="studio-label">Shipping &amp; Fulfillment</label>
-                <textarea id="newProdDelivery" class="studio-textarea studio-textarea-compact" rows="2" placeholder="e.g. Dispatched within 24 hours. Express courier."></textarea>
+                <label for="newProdDelivery" class="studio-label">Delivery &amp; Fulfillment</label>
+                <textarea id="newProdDelivery" class="studio-textarea studio-textarea-compact" rows="2" placeholder="e.g. Lead time, delivery options, or bulk-order requirements."></textarea>
               </div>
             </div>
 
@@ -2426,7 +2431,7 @@
       <!-- 3. Footer -->
       <div class="studio-modal-footer">
         <div class="studio-footer-status">
-          <span id="studioFooterStatus">Ready to publish to online store</span>
+          <span id="studioFooterStatus">Ready to publish to product catalog</span>
         </div>
 
         <div class="studio-footer-actions">
@@ -2434,7 +2439,7 @@
             Discard
           </button>
           <button type="submit" class="studio-btn-publish" id="btnSubmitProduct">
-            <span class="studio-btn-text">Publish Product to Store</span>
+            <span class="studio-btn-text">Publish Product to Catalog</span>
             <span class="studio-btn-arrow">↗</span>
           </button>
         </div>
@@ -2479,7 +2484,7 @@
 
             <div class="studio-input-group">
               <label class="studio-label" for="driverEmail">Email Address <span class="studio-req">*</span></label>
-              <input class="studio-input" id="driverEmail" name="email" type="email" placeholder="e.g. sipho.driver@velora.co.za" required maxlength="254">
+              <input class="studio-input" id="driverEmail" name="email" type="email" placeholder="e.g. driver@company.com" required maxlength="254">
             </div>
 
             <div class="studio-grid-2">
@@ -2702,7 +2707,7 @@
     </div>
   </div>
 
-  <!-- Velora Studio Global Confirmation Modal -->
+  <!-- Leadway Powders Global Confirmation Modal -->
   <div class="dash-modal-backdrop" id="veloraConfirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
     <div class="dash-modal velora-confirm-dialog">
       <div class="confirm-dialog-header">

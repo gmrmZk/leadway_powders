@@ -248,7 +248,7 @@ function renderListView(container, products) {
 
     const eyebrow = document.createElement('span');
     eyebrow.className = 'inv-list-eyebrow';
-    eyebrow.textContent = prod.eyebrow || 'Velora Atelier';
+    eyebrow.textContent = prod.eyebrow || 'Leadway Powders';
 
     const title = document.createElement('span');
     title.className = 'inv-list-title';
@@ -442,7 +442,7 @@ function renderDetailsView(container, products) {
     const topMeta = document.createElement('div');
     const catTag = document.createElement('span');
     catTag.className = 'product-category-tag';
-    catTag.textContent = `${prod.category} • ${prod.eyebrow || 'Velora Atelier'}`;
+    catTag.textContent = `${prod.category} • ${prod.eyebrow || 'Leadway Powders'}`;
     topMeta.appendChild(catTag);
 
     const title = document.createElement('h3');
@@ -728,7 +728,7 @@ window.openProductDetailModal = function(prod) {
 
   // 4. Product Copy & Styling
   const eyebrowEl = document.getElementById('productEyebrow');
-  if (eyebrowEl) eyebrowEl.textContent = prod.eyebrow || 'Velora Atelier';
+  if (eyebrowEl) eyebrowEl.textContent = prod.eyebrow || 'Leadway Powders';
 
   const titleEl = document.getElementById('productTitle');
   if (titleEl) {

@@ -244,7 +244,7 @@ function mapDbOrder(order) {
           item.product_name ||
           item.title ||
           item.name ||
-          'Velora Curated Essential',
+          'Leadway Powders Ingredient Blend',
 
         category:
           item.category ||
@@ -562,7 +562,7 @@ window.fetchOrdersFromDb =
       return window.ordersData;
     } catch (error) {
       console.error(
-        '[Velora Admin] Error fetching orders:',
+        '[Leadway Powders Admin] Error fetching orders:',
         error
       );
 
@@ -720,7 +720,7 @@ window.deleteOrderFromDb = async function(order) {
     }
     return true;
   } catch (error) {
-    console.error('[Velora Admin] Error deleting order:', error);
+    console.error('[Leadway Powders Admin] Error deleting order:', error);
     if (typeof window.showToast === 'function') {
       window.showToast(error.message || 'Unable to delete order.');
     }

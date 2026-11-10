@@ -598,7 +598,7 @@
       if (textSpan) {
         textSpan.textContent = isEdit
           ? 'Save Product Changes'
-          : 'Publish Product to Store';
+          : 'Publish Product to Catalog';
       }
 
       if (arrowSpan) {
@@ -651,7 +651,7 @@
 
     if (subEl) {
       subEl.textContent =
-        'Fill in the details to publish a new piece to your store catalog.';
+        'Add ingredient details, pricing, and stock information for your catalog.';
     }
 
     const submitBtn =
@@ -667,7 +667,7 @@
 
       if (textSpan) {
         textSpan.textContent =
-          'Publish Product to Store';
+          'Publish Product to Catalog';
       }
     }
 
@@ -678,7 +678,7 @@
 
     if (statusEl) {
       statusEl.textContent =
-        'Ready to publish to online store';
+        'Ready to publish to product catalog';
     }
   }
 
@@ -773,7 +773,7 @@
 
     setVal(
       'newProdCategory',
-      prod.category || 'T-Shirts'
+      prod.category || 'Milk Tea Powder'
     );
 
     setVal(
@@ -1394,7 +1394,7 @@
         eyebrow:
           savedProduct.eyebrow ||
           requestBody.eyebrow ||
-          'Velora Atelier',
+          'Leadway Powders',
 
         category:
           savedProduct.category ||
@@ -1594,7 +1594,7 @@
       }
     } catch (err) {
       console.error(
-        '[Velora] Error saving product to backend:',
+        '[Leadway Powders] Error saving product to backend:',
         err
       );
 
@@ -1654,7 +1654,7 @@
 
             eyebrow:
               p.eyebrow ||
-              'Velora Atelier',
+              'Leadway Powders',
 
             category:
               p.category,
@@ -1758,7 +1758,7 @@
       }
     } catch (err) {
       console.warn(
-        '[Velora] Note: Could not fetch initial DB products:',
+        '[Leadway Powders] Note: Could not fetch initial DB products:',
         err
       );
     }

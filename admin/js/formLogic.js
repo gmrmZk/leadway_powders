@@ -35,7 +35,7 @@
       sessionStorage.removeItem(getSessionActiveKey());
       sessionStorage.setItem('velora_explicit_signout', 'true');
     } catch (e) {
-      console.warn('[Velora Auth] storage remove error:', e);
+      console.warn('[Leadway Powders Auth] storage remove error:', e);
     }
 
     clearAuthAlert();
@@ -51,7 +51,7 @@
     }
 
     if (typeof window.showToast === 'function') {
-      window.showToast('Signed out of Velora Studio Operations');
+      window.showToast('Signed out of Leadway Powders Admin');
     }
   };
 
@@ -85,7 +85,7 @@
         fullNameInput.required = true;
         if (shouldFocus) fullNameInput.focus();
       }
-      if (termsText) termsText.textContent = 'I agree to the Velora Security & Access Policy';
+      if (termsText) termsText.textContent = 'I agree to the Leadway Powders Security & Access Policy';
       if (primaryBtn) primaryBtn.textContent = 'Create Account & Sign In';
       if (secondaryBtn) secondaryBtn.textContent = 'Already registered? Sign In';
     } else {
