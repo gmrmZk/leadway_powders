@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Leadway Powders sources beverage, dessert and food ingredient powders for cafés, restaurants, food-service businesses, distributors and bulk buyers.">
+    <title>LEADWAY POWDERS — Food &amp; Beverage Powders</title>
+    <link rel="icon" type="image/png" href="./images/LandingPageImages/favicon.png?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <meta property="og:image" content="./images/LandingPageImages/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="./images/LandingPageImages/logo.png">
+</head>
+
+<body>
+
+    <!-- Header / Navigation -->
+    <header class="site-header" id="header">
+        <a class="brand" href="#top" aria-label="LEADWAY POWDERS home"><img src="./images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+
+        <nav class="desktop-nav" aria-label="Primary navigation">
+            <a class="active" href="index.html">Home</a>
+            <a href="./components/shop.html">Shop</a>
+            <a href="./components/about.html">About</a>
+            <a href="./components/contact.html">Contact</a>
+        </nav>
+
+        <div class="header-actions">
+            <button class="icon-button search-button" type="button" aria-label="Search">
+                <span></span>
+            </button>
+            <a class="header-account-link" href="./components/auth.html" id="headerAccountBtn" aria-label="Account">
+                <svg class="account-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span class="account-btn-label" id="headerAccountText">Account</span>
+            </a>
+            <a class="icon-button bag-button" href="./components/cart.html" aria-label="Shopping bag">
+                <span id="cartCount">0</span>
+            </a>
+            <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false">
+                <i></i><i></i>
+            </button>
+        </div>
+
+        <!-- Mobile slide-down nav -->
+        <nav class="mobile-nav" aria-label="Mobile navigation">
+            <a href="index.html">Home</a>
+            <a href="./components/shop.html">Shop</a>
+            <a href="./components/about.html">About</a>
+            <a href="./components/contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <main id="top">
+
+        <!-- Hero section -->
+        <section class="hero" aria-label="LEADWAY POWDERS and our ingredient sourcing partnership">
+            <div class="hero-media" aria-hidden="true">
+                <img src="https://www.allwinfood.com/storage/media/products/products%20banner/products-06.jpg" alt="" class="hero-image">
+                <div class="hero-shade"></div>
+            </div>
+
+            <div class="hero-content">
+                <p class="eyebrow" id="heroEyebrow">The right ingredients. The right partner.</p>
+                <h1 id="heroTitle">A better supply<br><em id="heroAccent">partnership for your business</em></h1>
+                <p class="hero-description" id="heroDescription">We believe great food and beverage businesses begin with the right ingredients and the right supply partner. We source a diverse range of powders through our manufacturing partners.</p>
+                <a class="primary-button" href="#shop" id="heroButton">Explore Products <span>&#8599;</span></a>
+            </div>
+
+            <div class="hero-footer">
+                <span class="slide-count"><strong id="slideCurrent">01</strong> / 03</span>
+                <div class="slide-controls">
+                    <button type="button" class="arrow-button" id="previousSlide"
+                        aria-label="Previous slide">&larr;</button>
+                    <button type="button" class="arrow-button" id="nextSlide" aria-label="Next slide">&rarr;</button>
+                </div>
+                <div class="slide-dots" aria-label="Choose slide">
+                    <button class="dot active" type="button" aria-label="Go to slide 1"></button>
+                    <button class="dot" type="button" aria-label="Go to slide 2"></button>
+                    <button class="dot" type="button" aria-label="Go to slide 3"></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why businesses choose Leadway Powders -->
+        <section class="benefits" id="story">
+            <div>
+                <span class="benefit-number">01</span>
+                <div>
+                    <h2>Aligned to Your Needs</h2>
+                    <p>Products and services that fit your operational and commercial needs, with consistency, availability, performance and value in mind.</p>
+                </div>
+            </div>
+            <div>
+                <span class="benefit-number">02</span>
+                <div>
+                    <h2>One Business Relationship</h2>
+                    <p>Access beverage, dessert and ingredient categories, with solutions for distributors, resellers and bulk buyers.</p>
+                </div>
+            </div>
+            <div>
+                <span class="benefit-number">03</span>
+                <div>
+                    <h2>Responsive Partnership</h2>
+                    <p>Get responsive communication and support throughout sourcing, helping you expand your product offering and market reach.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="collection" id="shop">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Sourced through our manufacturing partners</p>
+                    <h2>Ingredients for <em>your business.</em></h2>
+                </div>
+                <a class="text-link" href="./components/shop.html#catalog">Explore our products <span>&#8599;</span></a>
+            </div>
+
+            <div class="product-grid" id="edit"><p class="catalog-empty">Loading available products...</p></div>
+        </section>
+
+        <!-- Summer Deals Banner -->
+        <section id="banner" class="section-p1">
+            <div class="banner-overlay"></div>
+            <div class="banner-content">
+                <h4>LEADWAY POWDERS</h4>
+                <h2>
+                    Beverage, dessert &amp; food <span>ingredient powders</span>
+                </h2>
+
+                <a class="banner-button" href="./components/shop.html#catalog">Browse Categories <span>&#8599;</span></a>
+            </div>
+        </section>
+
+        <!-- New Arrivals -->
+        <section class="collection" id="new-arrivals">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Products for food and beverage businesses</p>
+                    <h2>Find ingredients for <em>your offering.</em></h2>
+                </div>
+                <a class="text-link" href="./components/shop.html#catalog">Explore our products <span>&#8599;</span></a>
+            </div>
+
+            <div class="product-grid" id="new-arrivals-grid"><p class="catalog-empty">Browse the product categories in our shop.</p></div>
+        </section>
+
+        <!-- Two-up promo banners -->
+        <section id="sm-banner" class="section-p1">
+            <div class="banner-box banner-box-a">
+                <div class="banner-box-overlay"></div>
+                <div class="banner-box-content">
+                    <h4>For Beverage Businesses</h4>
+                    <h2>Source ingredients for your menu</h2>
+                    <span>Flexible sourcing solutions for cafés, bubble tea businesses and more.</span>
+                    <a class="banner-box-btn" href="./components/contact.html">Talk to Our Team <span>&#8599;</span></a>
+                </div>
+            </div>
+
+            <div class="banner-box banner-box-b">
+                <div class="banner-box-overlay"></div>
+                <div class="banner-box-content">
+                    <h4>For Dessert Businesses</h4>
+                    <h2>Build your product offering</h2>
+                    <span>Ingredient sourcing for dessert shops, restaurants and food-service operations.</span>
+                    <a class="banner-box-btn" href="./components/contact.html">Talk to Our Team <span>&#8599;</span></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Three text banners -->
+        <section id="banner3">
+            <div class="banner-box banner-box-1">
+                <div class="banner-mini-overlay"></div>
+                <div class="banner-mini-content">
+
+                </div>
+                <a class="banner-box-btn banner-order-btn" href="./components/shop.html#catalog">Order Now <span>&#8599;</span></a>
+            </div>
+            <div class="banner-box banner-box-2">
+                <div class="banner-mini-overlay"></div>
+                <div class="banner-mini-content">
+
+                </div>
+                <a class="banner-box-btn banner-order-btn" href="./components/shop.html#catalog">Order Now <span>&#8599;</span></a>
+            </div>
+            <div class="banner-box banner-box-3">
+                <div class="banner-mini-overlay"></div>
+                <div class="banner-mini-content">
+
+                </div>
+                <a class="banner-box-btn banner-order-btn" href="./components/shop.html#catalog">Order Now <span>&#8599;</span></a>
+            </div>
+        </section>
+
+        <!-- Newsletter subscription -->
+        <section id="newsletter" class="section-p1">
+            <div class="newsletter-inner">
+                <div class="newsletter-text">
+                    <h2>Food ingredient sourcing &amp; solutions</h2>
+                    <p>Get updates on customized ingredient solutions, wholesale opportunities and product sourcing for your business.</p>
+                </div>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" id="newsletterEmail" placeholder="Enter your email address" required>
+                    <button type="submit">Subscribe <span>&#8599;</span></button>
+                </form>
+            </div>
+            <p class="newsletter-feedback" id="newsletterFeedback"></p>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a class="brand" href="#top" aria-label="LEADWAY POWDERS home"><img src="./images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+                <p>We source beverage, dessert and food ingredient powders through our manufacturing partners.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <a href="#shop">Powder products</a>
+                <a href="./components/shop.html#catalog">Beverage powders</a>
+                <a href="./components/shop.html#catalog">Dessert powders</a>
+                <a href="./components/shop.html#catalog">Specialty powders</a>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <a href="./components/about.html">About us</a>
+                <a href="./components/contact.html">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="./components/contact.html#faqSection">Shipping &amp; returns</a>
+                <a href="./components/shop.html#catalog">Product specifications</a>
+                <a href="./components/contact.html#faqSection">FAQ</a>
+                <a href="./components/account.html#track">Track your order</a>
+                <a href="./components/account.html#orders">My Orders</a>
+            </div>
+            <div class="footer-col">
+                <h4>Follow</h4>
+                <a href="./components/shop.html#catalog">Browse products</a>
+                <a href="./components/contact.html">Product enquiries</a>
+                <a href="./components/about.html">About LEADWAY POWDERS</a>
+                <a href="#newsletter">Newsletter</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; 2026 LEADWAY POWDERS.</span>
+            <div class="footer-legal">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Cookies</a>
+                <a href="../admin/index.html">Admin</a>
+            </div>
+            <div class="footer-payments">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard"
+                    loading="lazy">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" loading="lazy">
+                <img src="./images/ApplePay.png" alt="Apple Pay" loading="lazy">
+                <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/960px-Google_Pay_Logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+                    alt="Google Pay" loading="lazy" class="google-pay-logo">
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/functions.js"></script>
+    <script type="module" src="./js/slide.js"></script>
+    <script type="module" src="./js/auth.js"></script>
+</body>
+
+</html>

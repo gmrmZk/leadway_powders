@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complete payment for your LEADWAY POWDERS order.">
+  <title>Payment — LEADWAY POWDERS</title>
+  <link rel="icon" type="image/png" href="../images/LandingPageImages/favicon.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/common.css">
+  <link rel="stylesheet" href="./css/payment.css">
+</head>
+
+<body id="top">
+
+  <!-- Announcement bar -->
+  <div class="announcement">
+    <span>Explore food and beverage powder products</span>
+    <a href="shop.html">Return to the shop <span aria-hidden="true">↗</span></a>
+  </div>
+
+  <!-- Header / navigation -->
+  <header class="site-header">
+    <a class="brand" href="shop.html" aria-label="LEADWAY POWDERS home"><img src="../images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <a href="../index.html">Home</a>
+      <a class="active" href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-button search-button" type="button" aria-label="Search">
+        <span></span>
+      </button>
+      <a class="header-account-link" href="auth.html" id="headerAccountBtn" aria-label="Account">
+        <svg class="account-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="account-btn-label" id="headerAccountText">Account</span>
+      </a>
+      <a class="icon-button bag-button" href="cart.html" aria-label="View shopping bag">
+        <span id="cartCount">0</span>
+      </a>
+      <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false">
+        <i></i><i></i>
+      </button>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a href="../index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="checkout-page-container">
+
+    <!-- Stepper Navigation -->
+    <div class="checkout-page-header">
+      <nav class="checkout-stepper" aria-label="Checkout progress">
+        <a href="shop.html" class="step-item" id="stepperStep1">
+          <span class="step-num">1</span>
+          <span>Shopping Bag</span>
+        </a>
+        <span class="step-divider">/</span>
+        <a href="checkout.html" class="step-item completed" id="stepperStep2">
+          <span class="step-num">✓</span>
+          <span>Information & Shipping</span>
+        </a>
+        <span class="step-divider">/</span>
+        <div class="step-item active" id="stepperStep3" aria-current="step">
+          <span class="step-num" id="stepperStep3Num">3</span>
+          <span>Payment</span>
+        </div>
+        <span class="step-divider">/</span>
+        <div class="step-item" id="stepperStep4">
+          <span class="step-num" id="stepperStep4Num">4</span>
+          <span>Confirmation</span>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Container -->
+    <div id="paymentPageMainContainer">
+      <div class="checkout-main-grid" id="checkoutGridSection">
+
+        <!-- Left Column: Payment & Review -->
+        <div class="checkout-form-column">
+
+          <!-- Shipping Summary Review Card -->
+          <div class="shipping-review-box">
+            <div class="review-item">
+              <span class="review-label">Contact</span>
+              <span class="review-value" id="paymentReviewContact">Contact details from checkout</span>
+              <a href="checkout.html" class="review-change">Change</a>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Ship to</span>
+              <span class="review-value" id="paymentReviewAddress">Delivery address from checkout</span>
+              <a href="checkout.html" class="review-change">Change</a>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Method</span>
+              <span class="review-value" id="paymentReviewMethod">Delivery options and charges are shown during checkout.</span>
+              <a href="checkout.html" class="review-change">Change</a>
+            </div>
+          </div>
+
+          <form id="standalonePaymentForm">
+
+            <!-- Payment Options Card -->
+            <div class="checkout-section-card">
+              <h2>
+                <span>Select Payment Method</span>
+                <span style="font-size: 11px; font-weight: normal; color: var(--muted); display: flex; align-items: center; gap: 4px;">
+                  Payment details
+                </span>
+              </h2>
+
+              <div class="payment-methods" id="pagePaymentMethods">
+                <label class="payment-option active" data-method="card">
+                  <input type="radio" name="paymentOptionRadio" value="card" checked>
+                  <span>Credit / Debit Card</span>
+                </label>
+                <label class="payment-option" data-method="eft">
+                  <input type="radio" name="paymentOptionRadio" value="eft">
+                  <span>Instant EFT (Ozow)</span>
+                </label>
+                <label class="payment-option" data-method="snapscan">
+                  <input type="radio" name="paymentOptionRadio" value="snapscan">
+                  <span>SnapScan / Zapper</span>
+                </label>
+                <label class="payment-option" data-method="cod">
+                  <input type="radio" name="paymentOptionRadio" value="cod">
+                  <span>Cash on Delivery</span>
+                </label>
+              </div>
+
+              <!-- Card Inputs View -->
+              <div id="pageCardFieldsView" class="card-details-box" style="margin-top: 18px;">
+                <div class="form-group">
+                  <label for="pageCardNumber">Card Number *</label>
+                  <input type="text" id="pageCardNumber" placeholder="4532 •••• •••• 8921" maxlength="19">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="pageCardExpiry">Expiry Date *</label>
+                    <input type="text" id="pageCardExpiry" placeholder="MM/YY" maxlength="5">
+                  </div>
+                  <div class="form-group">
+                    <label for="pageCardCvv">Security Code (CVV) *</label>
+                    <input type="password" id="pageCardCvv" placeholder="123" maxlength="4">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="pageCardName">Name on Card *</label>
+                  <input type="text" id="pageCardName" placeholder="Name as shown on card">
+                </div>
+              </div>
+
+              <!-- Instant EFT View -->
+              <div id="pageEftView" style="display: none; margin-top: 18px;">
+                <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Select your South African bank for instant, fee-free EFT payment verification:</p>
+                <div class="eft-bank-grid" id="pageEftBankGrid">
+                  <div class="bank-chip selected" data-bank="Capitec">Capitec</div>
+                  <div class="bank-chip" data-bank="FNB">FNB</div>
+                  <div class="bank-chip" data-bank="Standard Bank">Standard Bank</div>
+                  <div class="bank-chip" data-bank="Nedbank">Nedbank</div>
+                  <div class="bank-chip" data-bank="Absa">Absa</div>
+                  <div class="bank-chip" data-bank="Investec">Investec</div>
+                </div>
+              </div>
+
+              <!-- SnapScan View -->
+              <div id="pageSnapscanView" style="display: none; margin-top: 18px;">
+                <div class="snapscan-box">
+                  <div class="snapscan-qr">
+                    <svg viewBox="0 0 100 100" width="100" height="100">
+                      <rect width="100" height="100" fill="#fff"/>
+                      <path d="M10,10 h30 v30 h-30 z M15,15 v20 h20 v-20 z M20,20 h10 v10 h-10 z" fill="#1b1b1a"/>
+                      <path d="M60,10 h30 v30 h-30 z M65,15 v20 h20 v-20 z M70,20 h10 v10 h-10 z" fill="#1b1b1a"/>
+                      <path d="M10,60 h30 v30 h-30 z M15,65 v20 h20 v-20 z M20,70 h10 v10 h-10 z" fill="#1b1b1a"/>
+                      <rect x="45" y="10" width="10" height="10" fill="#1b1b1a"/>
+                      <rect x="45" y="30" width="10" height="20" fill="#1b1b1a"/>
+                      <rect x="60" y="50" width="15" height="15" fill="#1b1b1a"/>
+                      <rect x="80" y="70" width="10" height="15" fill="#1b1b1a"/>
+                      <rect x="45" y="75" width="20" height="15" fill="#1b1b1a"/>
+                    </svg>
+                  </div>
+                  <strong style="display: block; font-size: 13px; color: var(--ink);">Payment by SnapScan or Zapper</strong>
+                  <p style="font-size: 11px; color: var(--muted); margin-top: 6px;">Open your banking or payment app to complete this order instantly.</p>
+                </div>
+              </div>
+
+              <!-- Cash On Delivery View -->
+              <div id="pageCodView" style="display: none; margin-top: 18px;">
+                <div style="background: var(--cream); padding: 18px; border-radius: 4px; border: 1px solid var(--line); font-size: 12px; color: var(--muted); line-height: 1.6;">
+                  <strong style="color: var(--ink); display: block; margin-bottom: 6px;">Cash on Delivery Terms</strong>
+                  Follow the payment instructions shown for your selected payment method.
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Billing Address Card -->
+            <div class="checkout-section-card">
+              <h2>Billing Address</h2>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 12px; cursor: pointer;">
+                  <input type="radio" name="billingChoice" value="same" checked style="accent-color: var(--ink);">
+                  <span>Same as delivery address</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 12px; cursor: pointer;">
+                  <input type="radio" name="billingChoice" value="different" style="accent-color: var(--ink);">
+                  <span>Use a different billing address</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="checkout-btn-row">
+              <button type="submit" class="place-order-btn" style="flex: 1;" id="payNowSubmitBtn">
+                <span class="btn-spinner" id="payBtnSpinner" style="display: none;"></span>
+                <span id="payBtnLabel">Pay <span id="payButtonAmount">R0</span> Now &#128274;</span>
+              </button>
+              <a href="checkout.html" class="return-link">← Return to shipping</a>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- Right Column: Order Summary (Sticky) -->
+        <aside class="checkout-sidebar-sticky" id="paymentSidebar">
+          <h2>Order Summary</h2>
+          <div class="checkout-items-list" id="paymentPageItemsList"></div>
+
+          <div class="promo-row">
+            <input type="text" id="paymentPagePromoInput" placeholder="Promo code (try LEADWAY10)">
+            <button type="button" id="paymentPagePromoBtn">Apply</button>
+          </div>
+          <div id="paymentPagePromoFeedback" style="font-size: 11px; min-height: 14px; margin-bottom: 12px;"></div>
+
+          <div class="cart-summary-row">
+            <span>Items Subtotal</span>
+            <strong id="paymentPageSubtotal">R0</strong>
+          </div>
+          <div class="cart-summary-row" id="paymentPageDiscountRow" style="display: none;">
+            <span>Privilege Discount (10%)</span>
+            <strong id="paymentPageDiscount" style="color: var(--success);">-R0</strong>
+          </div>
+          <div class="cart-summary-row">
+            <span>Courier Delivery</span>
+            <strong id="paymentPageDelivery">Complimentary</strong>
+          </div>
+          <div class="cart-summary-row total-row">
+            <span>Total Due</span>
+            <strong id="paymentPageTotal">R0</strong>
+          </div>
+
+          <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); line-height: 1.6;">
+            <p>Review your payment and order details before confirming.</p>
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- Dedicated Order Confirmation View -->
+      <div class="order-success-view" id="orderConfirmationSuccessView" style="display: none;">
+        <!-- Top banner -->
+        <div class="confirm-top-banner">
+          <div class="order-success-icon">✓</div>
+          <span class="confirm-status-badge">
+            Order Submitted
+          </span>
+          <h1 class="confirm-title" id="confirmCustomerGreeting">
+            Thank you!
+          </h1>
+          <p class="confirm-message">
+            Your order <strong id="confirmOrderId">Order reference</strong> has been received. Order details are shown below.
+          </p>
+        </div>
+
+        <!-- Quick Delivery Timeline Tracker -->
+        <div class="confirm-delivery-box">
+          <div class="confirm-eta-row">
+            <div>
+              <span class="confirm-box-label">Estimated Delivery</span>
+              <strong class="confirm-box-val" id="confirmEstimatedDelivery">To be confirmed</strong>
+            </div>
+            <div style="text-align: right;">
+              <span class="confirm-box-label">Tracking Reference</span>
+              <code class="confirm-tracking-code" id="confirmTrackingNumber">To be confirmed</code>
+            </div>
+          </div>
+
+          <div class="confirm-progress-steps">
+            <div class="step-done">
+              <div class="step-dot done"></div>
+              Order Placed
+            </div>
+            <div class="step-current">
+              <div class="step-dot active"></div>
+              Processing
+            </div>
+            <div class="step-upcoming">
+              <div class="step-dot"></div>
+              With Courier
+            </div>
+            <div class="step-upcoming">
+              <div class="step-dot"></div>
+              Delivered
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Details Grid (Items & Summary) -->
+        <div class="confirm-details-grid">
+          
+          <!-- Left: Items Ordered -->
+          <div>
+            <h3 class="confirm-col-title" id="confirmItemsHeading">
+              Items in your order
+            </h3>
+            <div class="confirm-items-list" id="confirmItemsListContainer">
+              <!-- Rendered cleanly using <template id="confirmItemRowTemplate"> -->
+            </div>
+          </div>
+
+          <!-- Right: Delivery & Payment Details -->
+          <div>
+            <h3 class="confirm-col-title">
+              Destination & Payment
+            </h3>
+
+            <div class="confirm-info-block">
+              <span class="confirm-block-label">Shipping Address</span>
+              <strong id="confirmAddressFullName">Customer name</strong><br>
+              <span id="confirmAddressFullText">Delivery address</span><br>
+              <span id="confirmCustomerEmail">Email address</span><br>
+              <span id="confirmAddressPhone">Contact phone</span>
+            </div>
+
+            <div class="confirm-info-block">
+              <span class="confirm-block-label">Payment Method</span>
+              <span id="confirmPaymentMethodText">&#128274; Credit / Debit Card</span><br>
+              <span style="color: var(--muted); font-size: 11px;">Payment status: shown in your order details.</span>
+            </div>
+
+            <!-- Totals Receipt -->
+            <div class="confirm-totals-receipt">
+              <div class="confirm-total-line">
+                <span>Subtotal</span>
+                <strong id="confirmReceiptSubtotal">R0</strong>
+              </div>
+              <div class="confirm-total-line confirm-discount-line" id="confirmReceiptDiscountRow" style="display: none;">
+                <span>Privilege Discount</span>
+                <strong id="confirmReceiptDiscount">-R0</strong>
+              </div>
+              <div class="confirm-total-line">
+                <span>Delivery</span>
+                <strong id="confirmReceiptDelivery">Complimentary</strong>
+              </div>
+              <div class="confirm-total-line total-paid-line">
+                <span>Total Paid</span>
+                <span id="confirmReceiptTotal">R0</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="confirm-actions-row">
+          <a href="orders.html" class="confirm-btn-primary" id="confirmTrackParcelLink">
+            Track Your Order &#8599;
+          </a>
+          <a href="auth.html" class="confirm-btn-secondary">
+            View Account &#8599;
+          </a>
+          <button type="button" class="confirm-btn-secondary" id="confirmPrintInvoiceBtn">
+            Download Tax Invoice &#128424;
+          </button>
+          <a href="shop.html" class="confirm-btn-secondary">
+            Continue Shopping &#8599;
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Template for Checkout Summary Item -->
+    <template id="checkoutItemRowTemplate">
+      <div class="checkout-summary-item">
+        <div class="checkout-item-thumb-wrap">
+          <img class="checkout-item-thumb" src="" alt="">
+        </div>
+        <div class="checkout-item-details">
+          <h4 class="checkout-item-title"></h4>
+          <div class="checkout-item-meta"></div>
+        </div>
+        <strong class="checkout-item-price"></strong>
+      </div>
+    </template>
+
+    <!-- Template for Confirmation Item -->
+    <template id="confirmItemRowTemplate">
+      <div class="confirm-item-row">
+        <img class="confirm-item-thumb" src="" alt="">
+        <div class="confirm-item-details">
+          <h4 class="confirm-item-title"></h4>
+          <span class="confirm-item-meta"></span>
+        </div>
+        <strong class="confirm-item-price"></strong>
+      </div>
+    </template>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="brand" href="shop.html" aria-label="LEADWAY POWDERS home"><img src="../images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+        <p>Food and beverage powder products from categories featured in the Allwin catalogue.</p>
+      </div>
+      <div class="footer-col">
+        <h3>Shop</h3>
+        <a href="shop.html#catalog">Powder products</a>
+        <a href="shop.html#catalog">Beverage powders</a>
+        <a href="shop.html#catalog">Dessert powders</a>
+      </div>
+      <div class="footer-col">
+        <h3>Company</h3>
+        <a href="shop.html#story">About us</a>
+        <a href="shop.html#newsletter">Contact</a>
+        <a href="shop.html#newsletter">Journal</a>
+      </div>
+      <div class="footer-col">
+        <h3>Support</h3>
+        <a href="shop.html#catalog">Shipping & returns</a>
+        <a href="./account.html#track">Track Order</a>
+        <a href="./account.html#orders">My Account</a>
+        <a href="shop.html#newsletter">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 LEADWAY POWDERS.</span>
+      <span>Food and beverage powder products from the Allwin catalogue.</span>
+    </div>
+  </footer>
+
+  <script type="module" src="../js/cart.js"></script>
+  <script type="module" src="../js/payment.js"></script>
+</body>
+
+</html>

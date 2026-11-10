@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Velora Store Management Dashboard — Real-time order fulfillment, revenue analytics, customer tracking, and stock inventory.">
+  <title>Velora Operations — Store Management Dashboard</title>
+  <link rel="icon" type="image/png" href="../frontend/images/LandingPageImages/favicon.png">
+
+  <script>
+    (function () {
+      try {
+        var user = localStorage.getItem('velora_admin_user');
+        var session = sessionStorage.getItem('velora_admin_session_active');
+        var signout = sessionStorage.getItem('velora_explicit_signout');
+
+        var isAuth = false;
+        if (signout !== 'true') {
+          if (session === 'true') {
+            isAuth = true;
+          } else if (user) {
+            try {
+              var parsed = JSON.parse(user);
+              if (parsed && (parsed.id || parsed.email || parsed.full_name || parsed.role)) {
+                isAuth = true;
+              }
+            } catch (err) {
+              isAuth = (typeof user === 'string' && user.length > 2);
+            }
+          }
+        }
+
+        if (isAuth) {
+          document.documentElement.classList.add('velora-authenticated');
+          document.documentElement.classList.remove('velora-auth-required');
+        } else {
+          document.documentElement.classList.add('velora-auth-required');
+          document.documentElement.classList.remove('velora-authenticated');
+        }
+      } catch (e) {
+        document.documentElement.classList.add('velora-auth-required');
+      }
+    })();
+  </script>
+  <style id="velora-critical-antiflicker">
+    /* Instant Anti-Flicker Protection: Synchronously enforced before body render */
+    html.velora-authenticated #adminAuthScreen,
+    html.velora-authenticated .admin-auth-screen {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+
+    html.velora-authenticated #dashboardViewport,
+    html.velora-authenticated .dashboard-viewport {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    html.velora-auth-required,
+    html:not(.velora-authenticated) {
+      background-color: #060408 !important;
+    }
+
+    html.velora-auth-required body,
+    html:not(.velora-authenticated) body {
+      background-color: #060408 !important;
+    }
+
+    html.velora-auth-required #dashboardViewport,
+    html.velora-auth-required .dashboard-viewport,
+    html:not(.velora-authenticated) #dashboardViewport,
+    html:not(.velora-authenticated) .dashboard-viewport {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+
+    html.velora-auth-required #adminAuthScreen,
+    html.velora-auth-required .admin-auth-screen,
+    html:not(.velora-authenticated) #adminAuthScreen,
+    html:not(.velora-authenticated) .admin-auth-screen {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 99999 !important;
+    }
+  </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+    rel="stylesheet">
+
+  <!-- Unified Standalone Styling (Includes all component & auth styles) -->
+  <link rel="stylesheet" href="./dashboard.css">
+
+  <script>
+    window.currentTab = 'dashboard';
+    window._earlyActionQueue = [];
+
+    function _queueOrRun(realFnName, fallbackRun, ...args) {
+      if (typeof window[realFnName] === 'function') {
+        return window[realFnName](...args);
+      }
+      if (typeof fallbackRun === 'function') {
+        fallbackRun();
+      }
+      window._earlyActionQueue.push(() => {
+        if (typeof window[realFnName] === 'function') {
+          window[realFnName](...args);
+        }
+      });
+    }
+
+    if (!window.switchTab) {
+      window.switchTab = function (tabId) {
+        window.currentTab = tabId;
+        _queueOrRun('_realSwitchTab', null, tabId);
+      };
+    }
+
+    if (!window.adminSignOut) {
+      window.adminSignOut = function () {
+        try {
+          const key = (window.STORAGE_KEYS && window.STORAGE_KEYS.AUTH_USER) || 'velora_admin_user';
+          localStorage.removeItem(key);
+        } catch (e) { }
+        if (typeof window._realAdminSignOut === 'function') {
+          window._realAdminSignOut();
+        } else if (typeof window.checkAdminAuthSession === 'function') {
+          window.checkAdminAuthSession();
+        } else {
+          window._earlyActionQueue.push(() => {
+            if (typeof window._realAdminSignOut === 'function') {
+              window._realAdminSignOut();
+            } else if (typeof window.checkAdminAuthSession === 'function') {
+              window.checkAdminAuthSession();
+            } else {
+              window.location.reload();
+            }
+          });
+        }
+      };
+    }
+
+    if (!window.adminLogin) {
+      window.adminLogin = function (...args) {
+        _queueOrRun('_realAdminLogin', null, ...args);
+      };
+    }
+
+    if (!window.showAuthGate) {
+      window.showAuthGate = function () {
+        document.documentElement.classList.add('velora-auth-required');
+        document.documentElement.classList.remove('velora-authenticated');
+        const el = document.getElementById('adminAuthScreen');
+        if (el) el.style.setProperty('display', 'flex', 'important');
+        const dash = document.getElementById('dashboardViewport') || document.querySelector('.dashboard-viewport');
+        if (dash) dash.style.setProperty('display', 'none', 'important');
+        if (typeof window._realShowAuthGate === 'function') {
+          window._realShowAuthGate();
+        } else {
+          window._earlyActionQueue.push(() => {
+            if (typeof window._realShowAuthGate === 'function') window._realShowAuthGate();
+          });
+        }
+      };
+    }
+
+    if (!window.closeAuthGate) {
+      window.closeAuthGate = function () {
+        try {
+          sessionStorage.setItem('velora_admin_session_active', 'true');
+          sessionStorage.removeItem('velora_explicit_signout');
+          if (!localStorage.getItem('velora_admin_user')) {
+            localStorage.setItem('velora_admin_user', JSON.stringify({
+              id: 1,
+              full_name: 'Kristina Evans',
+              email: 'kris.evans@velora.co.za',
+              role: 'Studio Director'
+            }));
+          }
+        } catch (e) { }
+
+        document.documentElement.classList.remove('velora-auth-required');
+        document.documentElement.classList.add('velora-authenticated');
+        const el = document.getElementById('adminAuthScreen');
+        if (el) {
+          el.style.setProperty('display', 'none', 'important');
+          el.style.setProperty('visibility', 'hidden', 'important');
+          el.style.setProperty('opacity', '0', 'important');
+        }
+        const dash = document.getElementById('dashboardViewport') || document.querySelector('.dashboard-viewport');
+        if (dash) {
+          dash.style.setProperty('display', 'flex', 'important');
+          dash.style.setProperty('visibility', 'visible', 'important');
+          dash.style.setProperty('opacity', '1', 'important');
+        }
+        if (typeof window._realCloseAuthGate === 'function') {
+          window._realCloseAuthGate();
+        } else {
+          window._earlyActionQueue.push(() => {
+            if (typeof window._realCloseAuthGate === 'function') window._realCloseAuthGate();
+          });
+        }
+      };
+    }
+
+    if (!window.togglePasswordVisibility) {
+      window.togglePasswordVisibility = function () {
+        _queueOrRun('_realTogglePasswordVisibility', () => {
+          const pwd = document.getElementById('kinderPassword');
+          if (pwd) pwd.type = pwd.type === 'password' ? 'text' : 'password';
+        });
+      };
+    }
+
+    if (!window.setKinderAuthMode) {
+      window.setKinderAuthMode = function (mode, shouldFocus) {
+        _queueOrRun('_realSetKinderAuthMode', null, mode, shouldFocus);
+      };
+    }
+
+    if (!window.toggleKinderAuthMode) {
+      window.toggleKinderAuthMode = function () {
+        _queueOrRun('_realToggleKinderAuthMode', null);
+      };
+    }
+
+    if (!window.fillKinderAccount) {
+      window.fillKinderAccount = function (profileKey) {
+        _queueOrRun('_realFillKinderAccount', null, profileKey);
+      };
+    }
+
+    if (!window.handleKinderAuthSubmit) {
+      window.handleKinderAuthSubmit = function (e) {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        _queueOrRun('_realHandleKinderAuthSubmit', null, e);
+      };
+    }
+
+    if (!window.closeMobileSidebar) {
+      window.closeMobileSidebar = function () {
+        const sidebar = document.getElementById('dashboardSidebar');
+        if (sidebar) sidebar.classList.remove('mobile-open', 'open');
+        const backdrop = document.getElementById('mobileSidebarBackdrop');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.classList.remove('sidebar-drawer-active');
+      };
+    }
+
+    if (!window.toggleMobileSidebar) {
+      window.toggleMobileSidebar = function (e) {
+        if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+        const sidebar = document.getElementById('dashboardSidebar');
+        const backdrop = document.getElementById('mobileSidebarBackdrop');
+        if (sidebar) {
+          const isOpen = sidebar.classList.toggle('mobile-open');
+          sidebar.classList.toggle('open', isOpen);
+          if (backdrop) backdrop.classList.toggle('active', isOpen);
+          document.body.classList.toggle('sidebar-drawer-active', isOpen);
+        }
+      };
+    }
+
+    if (!window.showToast) {
+      window.showToast = function (msg, duration) {
+        _queueOrRun('_realShowToast', () => console.log('[Velora Toast]', msg), msg, duration);
+      };
+    }
+
+    if (!window.openNewProductModal) {
+      window.openNewProductModal = function () {
+        const m = document.getElementById('newProductModal');
+        if (m) m.classList.add('open');
+      };
+    }
+    if (!window.closeNewProductModal) {
+      window.closeNewProductModal = function () {
+        const m = document.getElementById('newProductModal');
+        if (m) m.classList.remove('open');
+      };
+    }
+
+    if (!window.openNewCustomerModal) {
+      window.openNewCustomerModal = function () {
+        const m = document.getElementById('newCustomerModal');
+        if (m) m.classList.add('open');
+      };
+    }
+    if (!window.closeNewCustomerModal) {
+      window.closeNewCustomerModal = function () {
+        const m = document.getElementById('newCustomerModal');
+        if (m) m.classList.remove('open');
+      };
+    }
+
+    if (!window.openReceiptModal) {
+      window.openReceiptModal = function (orderId) {
+        _queueOrRun('_realOpenReceiptModal', null, orderId);
+      };
+    }
+    if (!window.closeReceiptModal) {
+      window.closeReceiptModal = function () {
+        const m = document.getElementById('receiptModal');
+        if (m) m.classList.remove('open');
+      };
+    }
+
+    if (!window.openOrderDrawer) {
+      window.openOrderDrawer = function (orderId) {
+        _queueOrRun('selectAndOpenOrder', null, orderId);
+      };
+    }
+    if (!window.closeOrderDrawer) {
+      window.closeOrderDrawer = function () {
+        const d = document.getElementById('orderDrawer');
+        if (d) d.classList.remove('open');
+      };
+    }
+
+    if (!window.openHeaderSearch) {
+      window.openHeaderSearch = function () {
+        _queueOrRun('_realOpenHeaderSearch', null);
+      };
+    }
+    if (!window.closeHeaderSearch) {
+      window.closeHeaderSearch = function () {
+        _queueOrRun('_realCloseHeaderSearch', null);
+      };
+    }
+
+    if (!window.toggleCountryDropdown) {
+      window.toggleCountryDropdown = function (force) {
+        _queueOrRun('_realToggleCountryDropdown', null, force);
+      };
+    }
+
+    if (!window.downloadProjectZip) {
+      window.downloadProjectZip = function () {
+        if (typeof window._realDownloadProjectZip === 'function') {
+          return window._realDownloadProjectZip();
+        }
+        _queueOrRun('_realDownloadProjectZip', () => {
+          if (typeof window.showToast === 'function') {
+            window.showToast('Preparing project ZIP archive...');
+          }
+          const downloadPath = (window.location && window.location.pathname && window.location.pathname.startsWith('/admin')) ? '/admin/download' : '/download';
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = downloadPath;
+          a.download = 'velora-project.zip';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            if (a.parentNode) a.parentNode.removeChild(a);
+          }, 1000);
+        });
+      };
+    }
+  </script>
+</head>
+
+<body>
+
+  <!-- 0. Authentication Screen (First in DOM so login renders instantaneously without dashboard flash) -->
+  <div class="admin-auth-screen kinder-auth-theme" id="adminAuthScreen" data-component="auth">
+    <div class="kinder-auth-canvas">
+      <div class="kinder-bg-decorations" aria-hidden="true">
+        <div class="kinder-fashion-layer"></div>
+        <div class="kinder-mesh-ambient"></div>
+      </div>
+
+      <header class="kinder-top-bar">
+        <div class="kinder-brand-logo-group">
+          <div class="kinder-brand-text">
+            <img src="../frontend/images/LandingPageImages/logo.png" alt="LEADWAY POWDERS" class="admin-brand-logo">
+          </div>
+        </div>
+        <div class="kinder-top-actions">
+          <button type="button" class="kinder-back-btn" id="kinderBackToDashBtn" onclick="window.closeAuthGate()"
+            style="display: none;" title="Return to Dashboard">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span>Return to Dashboard</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="kinder-main-container">
+        <section class="kinder-editorial-hero" aria-label="Velora Studio Overview">
+          <h2 class="kinder-hero-headline">High Fashion & Retail Management Orchestration</h2>
+          <p class="kinder-hero-desc">
+            Unified dispatch management, live South African ZAR settlement via Ozow & SnapScan, real-time catalog stock
+            control, and bespoke client concierge workflows.
+          </p>
+        </section>
+
+        <section class="kinder-form-wrapper" aria-label="Sign In or Register">
+          <div class="kinder-form-card" id="kinderFormCard">
+
+            <div class="kinder-mode-tabs" role="tablist">
+              <button type="button" class="kinder-tab-btn active" id="kinderTabLogin"
+                onclick="window.setKinderAuthMode('login', true)">Sign In</button>
+              <button type="button" class="kinder-tab-btn" id="kinderTabSignUp"
+                onclick="window.setKinderAuthMode('signup', true)">Create Account</button>
+            </div>
+
+            <h1 class="kinder-form-title" id="kinderAuthTitle">Welcome Back</h1>
+            <p class="kinder-form-subtitle" id="kinderAuthSubtitle">Sign in with your authorized studio email to manage
+              operations.</p>
+
+            <div class="kinder-auth-alert" id="kinderAuthAlert" style="display: none;" role="alert"></div>
+
+            <form class="kinder-form" id="kinderAuthForm" onsubmit="window.handleKinderAuthSubmit(event); return false;"
+              novalidate>
+
+              <div class="kinder-field-group" id="kinderNameGroup" style="display: none;">
+                <label class="kinder-field-label" for="kinderFullName">FULL NAME</label>
+
+                <div class="kinder-input-wrapper">
+                  <svg class="kinder-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+
+                  <input type="text" id="kinderFullName" class="kinder-underline-input" placeholder="e.g. Samira Hadid"
+                    autocomplete="off">
+                </div>
+              </div>
+
+              <div class="kinder-field-group">
+                <label class="kinder-field-label" for="kinderEmail">
+                  EMAIL ADDRESS
+                </label>
+
+                <div class="kinder-input-wrapper">
+                  <svg class="kinder-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+
+                  <input type="email" id="kinderEmail" class="kinder-underline-input" placeholder="name@velora.co.za"
+                    autocomplete="off">
+                </div>
+              </div>
+
+              <div class="kinder-field-group">
+                <label class="kinder-field-label" for="kinderPassword">
+                  PASSWORD
+                </label>
+
+                <div class="kinder-password-box kinder-input-wrapper">
+                  <svg class="kinder-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+
+                  <input type="password" id="kinderPassword" class="kinder-underline-input" placeholder="••••••••••••"
+                    autocomplete="new-password">
+
+                  <button type="button" class="kinder-eye-toggle" id="kinderEyeToggle"
+                    aria-label="Toggle password visibility">
+                    <svg id="kinderEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path
+                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                      </path>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="kinder-field-group" id="kinderConfirmPasswordGroup" style="display: none;">
+                <label class="kinder-field-label" for="kinderConfirmPassword">
+                  CONFIRM PASSWORD
+                </label>
+
+                <div class="kinder-input-wrapper">
+                  <svg class="kinder-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+
+                  <input type="password" id="kinderConfirmPassword" class="kinder-underline-input"
+                    placeholder="••••••••••••" autocomplete="new-password">
+                </div>
+              </div>
+
+              <label class="kinder-checkbox-row">
+                <input type="checkbox" id="kinderTermsCheckbox" class="kinder-checkbox-input" checked>
+
+                <span class="kinder-checkbox-label-text" id="kinderTermsText">
+                  Remember me
+                </span>
+              </label>
+
+              <div class="kinder-actions-stack">
+                <button type="submit" class="kinder-btn kinder-btn-solid" id="kinderPrimaryBtn">
+                  Sign In
+                </button>
+
+                <button type="button" class="kinder-btn-switch" id="kinderSecondaryBtn"
+                  onclick="window.toggleKinderAuthMode()">
+                  Don't have an account? Create Account
+                </button>
+              </div>
+
+            </form>
+
+            <div class="kinder-footer-text">
+              Velora Central Operations • High Fashion & Luxury Atelier, Sandton
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="dashboard-viewport" id="dashboardViewport">
+    <div class="dashboard-shell">
+
+      <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
+
+      <!-- 1. Navigation Sidebar -->
+      <aside class="dashboard-sidebar" id="dashboardSidebar" data-component="sidebar">
+        <div>
+          <div class="sidebar-header-row"
+            style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--dash-sidebar-line); padding-bottom: 16px; margin-bottom: 8px;">
+            <a href="./index.html" class="sidebar-brand" style="border-bottom: none; padding: 0;"
+              aria-label="LEADWAY POWDERS home">
+              <span class="brand"><img src="../frontend/images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></span>
+              <span class="brand-subtitle">Operations Portal</span>
+            </a>
+            <button type="button" class="sidebar-mobile-close-btn" id="sidebarMobileCloseBtn"
+              aria-label="Close navigation" onclick="window.closeMobileSidebar()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <nav class="sidebar-nav">
+            <button type="button" class="nav-item active" data-tab="dashboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              <span>Dashboard</span>
+            </button>
+
+            <button type="button" class="nav-item" data-tab="orders">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>Orders</span>
+            </button>
+
+            <button type="button" class="nav-item" data-tab="drivers">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 13V6a2 2 0 0 1 2-2h9v9H3z"></path>
+                <path d="M14 8h4l3 4v6h-3"></path>
+                <circle cx="7.5" cy="18" r="2.5"></circle>
+                <circle cx="17.5" cy="18" r="2.5"></circle>
+                <path d="M10 18h5"></path>
+              </svg>
+              <span>Drivers</span>
+            </button>
+
+            <button type="button" class="nav-item" data-tab="returns">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Returns</span>
+            </button>
+
+            <button type="button" class="nav-item" data-tab="inventory">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span>Products & Stock</span>
+            </button>
+
+            <button type="button" class="nav-item" data-tab="payments">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+              </svg>
+              <span>Payments</span>
+            </button>
+
+            <button type="button" class="nav-item" data-tab="customers">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Customers</span>
+            </button>
+          </nav>
+        </div>
+
+        <div class="sidebar-footer-nav">
+          <button type="button" class="nav-item" id="sidebarNotificationBtn" data-tab="notifications"
+            onclick="window.switchTab('notifications')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span>Notifications</span>
+          </button>
+
+          <button type="button" class="nav-item" id="sidebarSettingsBtn" data-tab="settings"
+            onclick="window.switchTab('settings')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
+            </svg>
+            <span>Settings</span>
+          </button>
+
+          <button type="button" class="nav-item" style="color: #f87171;" onclick="window.adminSignOut()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Log Out</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="dashboard-main">
+        <!-- 2. Header / Topbar -->
+        <header class="dashboard-topbar" id="dashboardTopbar" data-component="header">
+          <div class="topbar-left">
+            <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu"
+              aria-expanded="false">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+
+          </div>
+
+          <div class="topbar-search-container" id="topbarSearchContainer">
+            <div class="header-search-box" id="headerSearchBox">
+              <svg class="header-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="headerGlobalSearchInput" class="header-search-input"
+                placeholder="Search orders, items, clients, pages... (⌘K)" autocomplete="off" spellcheck="false"
+                aria-label="Global search">
+              <button type="button" class="header-search-clear-btn" id="headerSearchClearBtn" aria-label="Clear search"
+                style="display: none;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+              <div class="header-search-badge" id="headerSearchShortcutBadge" title="Press ⌘K or / to search">
+                <span>⌘K</span>
+              </div>
+            </div>
+
+            <div class="header-search-popover" id="headerSearchPopover" style="display: none;" role="dialog"
+              aria-label="Search results" aria-modal="false">
+              <div class="search-category-tabs" id="searchCategoryTabs">
+                <button type="button" class="search-tab-pill active" data-search-tab="all">All <span class="tab-count"
+                    id="searchCountAll">0</span></button>
+                <button type="button" class="search-tab-pill" data-search-tab="orders">Orders <span class="tab-count"
+                    id="searchCountOrders">0</span></button>
+                <button type="button" class="search-tab-pill" data-search-tab="products">Products <span
+                    class="tab-count" id="searchCountProducts">0</span></button>
+                <button type="button" class="search-tab-pill" data-search-tab="customers">Customers <span
+                    class="tab-count" id="searchCountCustomers">0</span></button>
+                <button type="button" class="search-tab-pill" data-search-tab="payments">Payments <span
+                    class="tab-count" id="searchCountPayments">0</span></button>
+                <button type="button" class="search-tab-pill" data-search-tab="pages">Navigation</button>
+              </div>
+
+              <div class="search-results-viewport" id="searchResultsViewport"></div>
+
+              <div class="search-popover-footer">
+                <div class="search-footer-shortcuts">
+                  <span class="shortcut-item"><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+                  <span class="shortcut-item"><kbd>↵</kbd> Select</span>
+                  <span class="shortcut-item"><kbd>ESC</kbd> Close</span>
+                </div>
+                <div class="search-footer-brand">
+                  <span>LEADWAY POWDERS Operations</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <div class="country-currency-picker-container" id="countryCurrencyPickerContainer">
+              <button type="button" class="country-currency-btn" id="countryCurrencyBtn"
+                aria-label="Select Country and Currency" aria-haspopup="true" aria-expanded="false"
+                title="Change country & currency">
+                <span class="country-flag-icon" id="headerSelectedFlag">🇿🇦</span>
+                <span class="country-code-pill" id="headerSelectedCode">ZAR</span>
+
+              </button>
+
+              <div class="country-dropdown-popover" id="countryCurrencyDropdown" style="display: none;" role="menu">
+                <div class="country-popover-header">
+                  <div class="country-popover-title">Store Country & Currency</div>
+                  <div class="country-popover-subtitle">Select a country to convert all store prices and reports</div>
+                  <div class="country-search-bar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="countrySearchInput" placeholder="Search country, currency..."
+                      autocomplete="off">
+                  </div>
+                </div>
+                <div class="country-options-list" id="countryDropdownList"></div>
+              </div>
+            </div>
+
+            <div class="notification-center-container" id="notificationCenterContainer">
+              <button type="button" class="action-icon-btn" id="headerNotificationBtn" title="Notifications"
+                aria-label="Notifications" onclick="window.switchTab('notifications')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge-count" id="headerNotificationCount">4</span>
+              </button>
+            </div>
+
+            <button type="button" class="action-icon-btn mobile-search-toggle-btn" id="mobileSearchToggleBtn"
+              title="Search Orders, Catalog, Clients (⌘K)" aria-label="Open search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+
+
+            <div class="admin-profile-pill" id="adminProfilePill"
+              title="Authenticated Administrator">
+              <img class="admin-avatar" id="topbarAdminAvatar" src="" alt="Administrator">
+
+              <div class="admin-info">
+                <span class="admin-name" id="topbarAdminName">
+                  Administrator
+                </span>
+
+                <span class="admin-role" id="topbarAdminRole">
+                  admin
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </header>
+
+        <div class="filter-bar" id="mainFilterBar" style="display: none;">
+          <div class="filter-left-group">
+            <select class="filter-select" id="statusFilterSelect">
+              <option value="all">Any status</option>
+              <option value="paid">Paid</option>
+              <option value="delivered">Delivered</option>
+              <option value="completed">Completed</option>
+              <option value="transit">In Transit</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+
+            <select class="filter-select" id="priceFilterSelect">
+              <option value="all">Any amount</option>
+              <option value="100-1500" id="filterOptMid">R100 – R1,500</option>
+              <option value="under-500" id="filterOptLow">Under R500</option>
+              <option value="above-1500" id="filterOptHigh">Above R1,500</option>
+            </select>
+
+            <div class="quick-search-input">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="orderSearchInputTop" placeholder="Search order, customer...">
+            </div>
+          </div>
+
+          <div class="filter-right-group">
+            <select class="filter-select" id="sortFilterSelectTop">
+              <option value="date-desc">Sort by Date (Newest)</option>
+              <option value="date-asc">Sort by Date (Oldest)</option>
+              <option value="total-desc">Sort by Amount (Highest)</option>
+              <option value="total-asc">Sort by Amount (Lowest)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="view-container">
+          <!-- 3. Overview View -->
+          <div id="overviewMainView" data-component="overview" style="display: block;">
+            <div class="kpi-grid" id="dashOverviewKPISection">
+              <div class="kpi-card" id="kpiOverviewRevenue">
+                <div class="kpi-header">
+                  <span class="kpi-title">Gross Revenue (<span class="current-curr-code">ZAR</span>)</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="1" x2="12" y2="23"></line>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="overviewKpiTotalRev">R0.00</div>
+                <div class="kpi-trend positive">
+                  <span>↑ +22.4%</span>
+                  <span class="kpi-trend-note">vs last period</span>
+                </div>
+              </div>
+
+              <div class="kpi-card" id="kpiOverviewOrders">
+                <div class="kpi-header">
+                  <span class="kpi-title">Total Orders</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="overviewKpiTotalOrders">0</div>
+                <div class="kpi-trend positive">
+                  <span>↑ +12 new</span>
+                  <span class="kpi-trend-note">today</span>
+                </div>
+              </div>
+
+              <div class="kpi-card" id="kpiOverviewReturns">
+                <div class="kpi-header">
+                  <span class="kpi-title">Active Returns</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="1 4 1 10 7 10"></polyline>
+                      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="overviewKpiActiveReturns">0</div>
+                <div class="kpi-trend neutral">
+                  <span>Awaiting inspection</span>
+                </div>
+              </div>
+
+              <div class="kpi-card" id="kpiOverviewBasket">
+                <div class="kpi-header">
+                  <span class="kpi-title">Average Basket</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="overviewKpiAvgBasket">R0.00</div>
+                <div class="kpi-trend positive">
+                  <span>↑ +6.2%</span>
+                  <span class="kpi-trend-note">conversion</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="overview-grid"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+              <div class="orders-table-card" style="padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 700;">Live Operations Queue</h3>
+                  <span class="status-pill status-paid">Store Active</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--dash-bg); border-radius: 10px;">
+                    <div>
+                      <div style="font-weight: 600; font-size: 13.5px;">Pending Fulfillment</div>
+                      <div style="font-size: 11.5px; color: var(--muted);">Ready for courier pickup</div>
+                    </div>
+                    <button type="button" class="drawer-btn drawer-btn-dark"
+                      style="flex: initial; padding: 6px 14px; font-size: 12px;"
+                      onclick="window.switchTab('orders')">Review (<span id="overviewPendingFulfillmentCount">0</span>)</button>
+                  </div>
+
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--dash-bg); border-radius: 10px;">
+                    <div>
+                      <div style="font-weight: 600; font-size: 13.5px;">In-Transit Shipments</div>
+                      <div style="font-size: 11.5px; color: var(--muted);">En route via Velora Courier</div>
+                    </div>
+                    <button type="button" class="drawer-btn drawer-btn-dark"
+                      style="flex: initial; padding: 6px 14px; font-size: 12px;"
+                      onclick="window.switchTab('orders')">Track (<span id="overviewInTransitCount">0</span>)</button>
+                  </div>
+
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--dash-bg); border-radius: 10px;">
+                    <div>
+                      <div style="font-weight: 600; font-size: 13.5px;">Return Authorizations</div>
+                      <div style="font-size: 11.5px; color: var(--muted);">Returns awaiting studio inspection</div>
+                    </div>
+                    <button type="button" class="drawer-btn drawer-btn-accent"
+                      style="flex: initial; padding: 6px 14px; font-size: 12px;"
+                      onclick="window.switchTab('returns')">Inspect (<span id="overviewPendingReturnsCount">0</span>)</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="orders-table-card" style="padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 700;">Trending Goods</h3>
+                  <button type="button" class="action-icon-btn" onclick="window.switchTab('inventory')"
+                    title="View Inventory">↗</button>
+                </div>
+                <div id="overviewTrendingGoodsList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+              </div>
+            </div>
+
+            <div class="orders-table-card">
+              <div
+                style="padding: 18px 24px; border-bottom: 1px solid var(--dash-border); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 700;">Recent Store Activity</h3>
+                <button type="button" class="drawer-btn drawer-btn-dark"
+                  style="flex: initial; padding: 6px 14px; font-size: 12px;" onclick="window.switchTab('orders')">View
+                  All Orders ↗</button>
+              </div>
+              <div class="table-responsive">
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th class="select-col"></th>
+                      <th>Order</th>
+                      <th>Customer</th>
+                      <th>Status</th>
+                      <th>Total</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="overviewRecentOrdersBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Orders View -->
+          <div id="ordersMainView" data-component="orders" style="display: none;">
+            <div class="orders-filter-toolbar" id="ordersFilterToolbar">
+              <div class="filter-left-group">
+                <div class="status-tab-pills" id="ordersStatusTabGroup">
+                  <button type="button" class="status-tab-btn active" data-status="all">All</button>
+                  <button type="button" class="status-tab-btn" data-status="paid">Paid</button>
+                  <button type="button" class="status-tab-btn" data-status="transit">In-Transit</button>
+                  <button type="button" class="status-tab-btn" data-status="delivered">Delivered</button>
+                  <button type="button" class="status-tab-btn" data-status="cancelled">Cancelled</button>
+                </div>
+
+                <div class="quick-search-input">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="orderSearchInput" placeholder="Search order, customer...">
+                </div>
+              </div>
+
+              <div class="filter-right-group">
+                <button type="button" class="drawer-btn" id="refreshOrdersBtn"
+                  style="flex: initial; padding: 7px 12px; font-size: 12.5px;"
+                  onclick="window.fetchOrdersFromDb(true)">↻ Refresh DB</button>
+                <select class="filter-select" id="sortFilterSelect">
+                  <option value="date-desc">Sort by Date (Newest)</option>
+                  <option value="date-asc">Sort by Date (Oldest)</option>
+                  <option value="total-desc">Sort by Amount (Highest)</option>
+                  <option value="total-asc">Sort by Amount (Lowest)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="kpi-grid" id="dashKPISection">
+              <div class="kpi-card" id="kpiOrdersRevenue">
+                <div class="kpi-header">
+                  <span class="kpi-title">Total Revenue</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="1" x2="12" y2="23"></line>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="ordersKpiRevenue">R0.00</div>
+                <div class="kpi-trend positive">
+                  <span>↑ +18.4%</span>
+                  <span class="kpi-trend-note">vs last month</span>
+                </div>
+              </div>
+
+              <div class="kpi-card" id="kpiOrdersCount">
+                <div class="kpi-header">
+                  <span class="kpi-title">Total Orders</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="ordersKpiCount">0</div>
+                <div class="kpi-trend positive">
+                  <span>↑ +12 new</span>
+                  <span class="kpi-trend-note">today</span>
+                </div>
+              </div>
+
+              <div class="kpi-card" id="kpiOrdersPending">
+                <div class="kpi-header">
+                  <span class="kpi-title">Orders to Fulfill</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="ordersKpiPending">0</div>
+                <div class="kpi-trend neutral">
+                  <span>Dispatch ready</span>
+                </div>
+              </div>
+
+              <div class="kpi-card" id="kpiOrdersAOV">
+                <div class="kpi-header">
+                  <span class="kpi-title">Avg Order Value</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="ordersKpiAOV">R0.00</div>
+                <div class="kpi-trend positive">
+                  <span>↑ +6.2%</span>
+                  <span class="kpi-trend-note">conversion</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="orders-table-card">
+              <div class="table-responsive">
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th class="select-col">
+                        <input type="checkbox" class="dash-checkbox" id="selectAllOrders" title="Select All">
+                      </th>
+                      <th>Order</th>
+                      <th>Customer</th>
+                      <th>Status</th>
+                      <th>Total</th>
+                      <th>Date</th>
+                      <th style="width: 120px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="ordersTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Drivers View -->
+          <div id="driversMainView" data-component="drivers" style="display: none;">
+            <div class="kpi-grid">
+              <div class="kpi-card">
+                <div class="kpi-header"><span class="kpi-title">Registered Drivers</span></div>
+                <div class="kpi-value" id="driversCount">0</div>
+              </div>
+            </div>
+
+            <!-- Drivers Table Card (Matches Dashboard Tables UI Theme) -->
+            <div class="orders-table-card">
+              <div style="padding: 18px 24px; border-bottom: 1px solid var(--dash-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                  <h3 style="margin: 0 0 4px; font-size: 16px; font-weight: 700;">Regional Courier Fleet</h3>
+                  <p style="margin: 0; font-size: 12.5px; color: var(--muted);">Authorized delivery drivers assigned to South African provinces</p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <button type="button" class="drawer-btn drawer-btn-dark" onclick="window.openDriverModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 12.5px; border-radius: 8px;">
+                    <span>＋ Add Courier Driver</span>
+                  </button>
+                  <div class="quick-search-input" style="width: 200px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="driverSearchInput" placeholder="Search drivers...">
+                  </div>
+                  <select class="filter-select" id="driverProvinceFilter">
+                    <option value="all">All Provinces</option>
+                    <option value="Eastern Cape">Eastern Cape</option>
+                    <option value="Free State">Free State</option>
+                    <option value="Gauteng">Gauteng</option>
+                    <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                    <option value="Limpopo">Limpopo</option>
+                    <option value="Mpumalanga">Mpumalanga</option>
+                    <option value="Northern Cape">Northern Cape</option>
+                    <option value="North West">North West</option>
+                    <option value="Western Cape">Western Cape</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Driver</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Province</th>
+                      <th>Assigned Orders</th>
+                      <th>Status</th>
+                      <th style="width: 140px; text-align: right;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="driversTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Returns View -->
+          <div id="returnsMainView" data-component="returns" style="display: none;">
+            <div class="kpi-grid" id="returnsKPISection">
+              <div class="kpi-card" id="kpiReturnsPending">
+                <div class="kpi-header">
+                  <span class="kpi-title">Pending Authorizations</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="1 4 1 10 7 10"></polyline>
+                      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="returnsKpiPendingCount">0</div>
+                <div class="kpi-trend neutral">
+                  <span>Awaiting studio check</span>
+                </div>
+              </div>
+
+              <div class="kpi-card" id="kpiReturnsTotalVal">
+                <div class="kpi-header">
+                  <span class="kpi-title">Potential Refund Value</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="1" x2="12" y2="23"></line>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="returnsKpiTotalValue">R0.00</div>
+                <div class="kpi-trend neutral">
+                  <span>Customer account credits</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="orders-table-card">
+              <div
+                style="padding: 18px 24px; border-bottom: 1px solid var(--dash-border); display: flex; justify-content: space-between; align-items: center;">
+                
+              </div>
+              <div class="table-responsive">
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Return ID</th>
+                      <th>Order Ref</th>
+                      <th>Customer</th>
+                      <th>Reason</th>
+                      <th>Refund Amount</th>
+                      <th>Return Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="returnsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Inventory View -->
+          <div id="inventoryMainView" data-component="inventory" style="display: none;">
+            <div class="inventory-section" id="inventoryComponent">
+              <div class="inventory-header-bar">
+                <div>
+                  <h3 class="inventory-title"></h3>
+                  <p class="inventory-subtitle">
+                  </p>
+                </div>
+                <div class="inventory-header-actions">
+                  <!-- View Switcher: Cards, List, Details -->
+                  <div class="inv-view-toggle" id="invViewToggle" role="group" aria-label="Catalog view style">
+
+                    <button type="button" class="drawer-btn drawer-btn-dark inventory-add-btn"
+                      onclick="window.openNewProductModal()">
+                      ＋ Add New Product
+                    </button>
+
+                    <button type="button" class="inv-toggle-btn active" data-view="cards" title="Cards Grid View"
+                      onclick="window.setInventoryViewMode('cards')">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                      </svg>
+                      <span>Cards</span>
+                    </button>
+                    <button type="button" class="inv-toggle-btn" data-view="list" title="Compact List View"
+                      onclick="window.setInventoryViewMode('list')">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                      </svg>
+                      <span>List</span>
+                    </button>
+                    <button type="button" class="inv-toggle-btn" data-view="details" title="Expanded Detailed View"
+                      onclick="window.setInventoryViewMode('details')">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                      </svg>
+                      <span>Details</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Product Inventory Display Container -->
+              <div class="product-inventory-container" id="productInventoryContainer">
+                <div class="product-inventory-grid" id="productInventoryGrid"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Customers View -->
+          <div id="customersMainView" data-component="customers" style="display: none;">
+            <div class="kpi-grid" id="customersKPISection">
+              <div class="kpi-card" id="kpiCustomersTotal">
+                <div class="kpi-header">
+                  <span class="kpi-title">Total Registered Clients</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="customersKpiTotalCount">0</div>
+                <div class="kpi-trend positive">
+                  <span>↑ +3 this week</span>
+                </div>
+              </div>
+
+              <div class="kpi-card" id="kpiCustomersLtv">
+                <div class="kpi-header">
+                  <span class="kpi-title">Average Lifetime Value</span>
+                  <div class="kpi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="1" x2="12" y2="23"></line>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="kpi-value" id="customersKpiAvgLtv">R0.00</div>
+                <div class="kpi-trend positive">
+                  <span>↑ High retention</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="orders-table-card">
+              <div
+                style="padding: 18px 24px; border-bottom: 1px solid var(--dash-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                  <h3 style="margin: 0 0 4px; font-size: 16px; font-weight: 700;"></h3>
+                  <p style="margin: 0; font-size: 12.5px; color: var(--muted);"></p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <div class="quick-search-input" style="width: 180px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="customerSearchInput" placeholder="Search clients...">
+                  </div>
+                  <select class="filter-select" id="customerTierFilter">
+                    <option value="all">All Tiers</option>
+                    <option value="Velora Client">Velora Client</option>
+                    <option value="VIP Privilege">VIP Privilege</option>
+                    <option value="Gold Member">Gold Member</option>
+                    <option value="Standard">Standard</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Client Name</th>
+                      <th>Contact Details</th>
+                      <th>Location / City</th>
+                      <th>Total Orders</th>
+                      <th>Lifetime Spend</th>
+                      <th style="width: 150px;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customersTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Payments View -->
+          <div id="paymentsMainView" data-component="payments" style="display: none;">
+           
+
+            <div class="orders-table-card">
+              <div
+                style="padding: 18px 24px; border-bottom: 1px solid var(--dash-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                  <h3 style="margin: 0 0 4px; font-size: 16px; font-weight: 700;"></h3>
+                  <p style="margin: 0; font-size: 12.5px; color: var(--muted);"></p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <div class="quick-search-input" style="width: 180px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="paymentSearchInput" placeholder="Search ref, customer...">
+                  </div>
+                  <select class="filter-select" id="paymentGatewayFilter">
+                    <option value="all">All Gateways</option>
+                    <option value="EFT">EFT</option>
+                    <option value="SnapScan">SnapScan</option>
+                    <option value="Zapper">Zapper</option>
+                    <option value="Card">Card</option>
+                    <option value="Cash on Delivery">Cash on Delivery</option>
+                  </select>
+                  <select class="filter-select" id="paymentStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Refunded">Refunded</option>
+                    <option value="Failed">Failed</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="dash-table">
+                  <thead>
+                    <tr>
+                      <th>Payment Ref</th>
+                      <th>Customer</th>
+                      <th>Gateway</th>
+                      <th>Gross Amount</th>
+                      <th>Net Amount</th>
+                      <th>Timestamp</th>
+                      <th>Status</th>
+                      <th style="width: 70px;">Receipt</th>
+                    </tr>
+                  </thead>
+                  <tbody id="paymentsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9. Notifications View -->
+          <div id="notificationsMainView" data-component="notifications" style="display: none;">
+            <section class="notifications-section" id="notificationsPageComponent">
+              <div class="notifications-header-bar">
+                
+                <div class="notifications-header-actions">
+                  <button type="button" class="notif-btn notif-btn-outline" id="btnPageMarkAllRead"
+                    onclick="window.markAllNotificationsRead()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Mark All Read</span>
+                  </button>
+                  <button type="button" class="notif-btn notif-btn-dark" id="btnPageClearAll"
+                    onclick="window.clearAllNotifications()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Clear Alerts</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="kpi-grid" id="notificationsKPISection">
+                <div class="kpi-card" id="kpiNotifsTotal">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Total Active Notices</span>
+                    <div class="kpi-icon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="kpi-value" id="notifsKpiTotalCount">0</div>
+                  <div class="kpi-trend neutral">
+                    <span>Logged in session</span>
+                  </div>
+                </div>
+
+                <div class="kpi-card" id="kpiNotifsUnread">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Unread Alerts</span>
+                    <div class="kpi-icon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="kpi-value" id="notifsKpiUnreadCount">0</div>
+                  <div class="kpi-trend positive" id="notifsKpiUnreadTrend">
+                    <span>Pending review</span>
+                  </div>
+                </div>
+
+                <div class="kpi-card" id="kpiNotifsActionable">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Actionable Items</span>
+                    <div class="kpi-icon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <polygon
+                          points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                        </polygon>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="kpi-value" id="notifsKpiActionableCount">0</div>
+                  <div class="kpi-trend neutral">
+                    <span>Order & stock dispatches</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notifications Table Card (Matches Dashboard Tables UI Theme) -->
+              <div class="orders-table-card">
+                <div style="padding: 18px 24px; border-bottom: 1px solid var(--dash-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                  <div>
+                    <h3 style="margin: 0 0 4px; font-size: 16px; font-weight: 700;">Operational Activity & Alerts</h3>
+                    <p style="margin: 0; font-size: 12.5px; color: var(--muted);">Real-time log of customer purchases, stock alerts, returns, and payment settlements</p>
+                  </div>
+                  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <div class="quick-search-input" style="width: 200px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      <input type="text" id="notificationSearchInput" placeholder="Search alerts...">
+                    </div>
+                    <select class="filter-select" id="notifStatusFilter">
+                      <option value="all">All Statuses</option>
+                      <option value="unread">Unread Only</option>
+                      <option value="read">Read Only</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="notif-filter-pills" id="notifCategoryFilterGroup">
+                  <button type="button" class="notif-pill active" data-category="all"
+                    onclick="window.filterNotificationsCategory('all')">
+                    All Alerts (<span id="pillCountAll">0</span>)
+                  </button>
+                  <button type="button" class="notif-pill" data-category="unread"
+                    onclick="window.filterNotificationsCategory('unread')">
+                    Unread (<span id="pillCountUnread">0</span>)
+                  </button>
+                  <button type="button" class="notif-pill" data-category="order"
+                    onclick="window.filterNotificationsCategory('order')">
+                    Orders (<span id="pillCountOrders">0</span>)
+                  </button>
+                  <button type="button" class="notif-pill" data-category="inventory"
+                    onclick="window.filterNotificationsCategory('inventory')">
+                    Stock (<span id="pillCountInventory">0</span>)
+                  </button>
+                  <button type="button" class="notif-pill" data-category="payment"
+                    onclick="window.filterNotificationsCategory('payment')">
+                    Finance (<span id="pillCountPayment">0</span>)
+                  </button>
+                  <button type="button" class="notif-pill" data-category="customer"
+                    onclick="window.filterNotificationsCategory('customer')">
+                    Customers (<span id="pillCountCustomers">0</span>)
+                  </button>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="dash-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 120px;">Category</th>
+                        <th>Alert &amp; Details</th>
+                        <th>Reference</th>
+                        <th>Timestamp</th>
+                        <th>Status</th>
+                        <th style="width: 120px; text-align: right;">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="notificationsTableBody"></tbody>
+                  </table>
+                </div>
+                <div class="notifications-feed-list" id="notificationsFeedList" style="display: none;"></div>
+              </div>
+            </section>
+          </div>
+
+          <!-- 10. Settings View -->
+          <div id="settingsMainView" data-component="settings" style="display: none;">
+            <section class="settings-section" id="settingsPageComponent">
+              <div class="settings-header-bar">
+                <div>
+                  <h3 class="settings-page-title">Operations & Studio Settings</h3>
+                  <p class="settings-page-subtitle">Configure South African retail parameters, currency settlement,
+                    courier rates, and security controls.</p>
+                </div>
+                <div class="settings-header-actions">
+                  <button type="button" class="settings-btn settings-btn-outline"
+                    onclick="window.resetSettingsDefaults()">Reset Defaults</button>
+                  <button type="button" class="settings-btn settings-btn-dark" id="saveSettingsBtn"
+                    onclick="window.saveStudioSettings()">Save Configuration</button>
+                </div>
+              </div>
+
+              <form id="studioSettingsForm" onsubmit="event.preventDefault(); window.saveStudioSettings();">
+                <div class="settings-grid">
+                  <div class="settings-card">
+                    <div class="settings-card-header">
+                      <div class="settings-card-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 class="settings-card-title">Studio Identity & Operations</h4>
+                        <p class="settings-card-desc">Public store details, client support desk, and headquarter
+                          address.</p>
+                      </div>
+                    </div>
+                    <div class="settings-card-body">
+                      <div class="settings-field-group">
+                        <label class="settings-label" for="settingStoreName">Studio Store Name</label>
+                        <input type="text" id="settingStoreName" class="settings-input"
+                          value="VELORA E-Commerce Studio">
+                      </div>
+                      <div class="settings-field-row">
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingSupportEmail">Support Desk Email</label>
+                          <input type="email" id="settingSupportEmail" class="settings-input"
+                            value="studio@velora.co.za">
+                        </div>
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingPhone">Dispatch Hotline</label>
+                          <input type="tel" id="settingPhone" class="settings-input" value="+27 11 883 0000">
+                        </div>
+                      </div>
+                      <div class="settings-field-group">
+                        <label class="settings-label" for="settingAddress">Studio Headquarters (Physical
+                          Address)</label>
+                        <input type="text" id="settingAddress" class="settings-input"
+                          value="Nelson Mandela Square, Sandton, Johannesburg, 2196, South Africa">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-card">
+                    <div class="settings-card-header">
+                      <div class="settings-card-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <line x1="12" y1="1" x2="12" y2="23"></line>
+                          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 class="settings-card-title">Currency & Tax Compliance</h4>
+                        <p class="settings-card-desc">SARS Value Added Tax (VAT) rate, base currency, and price display
+                          options.</p>
+                      </div>
+                    </div>
+                    <div class="settings-card-body">
+                      <div class="settings-field-row">
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingCurrency">Operational Base Currency</label>
+                          <select id="settingCurrency" class="settings-select">
+                            <option value="ZAR" selected>ZAR - South African Rand (R)</option>
+                            <option value="USD">USD - US Dollar ($)</option>
+                            <option value="GBP">GBP - British Pound (£)</option>
+                            <option value="EUR">EUR - Euro (€)</option>
+                            <option value="NAD">NAD - Namibian Dollar (N$)</option>
+                            <option value="BWP">BWP - Botswana Pula (P)</option>
+                            <option value="AUD">AUD - Australian Dollar (A$)</option>
+                            <option value="AED">AED - UAE Dirham (AED)</option>
+                          </select>
+                        </div>
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingVatRate">South Africa VAT Rate (%)</label>
+                          <input type="number" id="settingVatRate" class="settings-input" value="15" min="0" max="30">
+                        </div>
+                      </div>
+                      <div class="settings-field-row">
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingVatNumber">SARS VAT Registration No.</label>
+                          <input type="text" id="settingVatNumber" class="settings-input" value="4890284910">
+                        </div>
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingInvoicePrefix">Invoice Reference Prefix</label>
+                          <input type="text" id="settingInvoicePrefix" class="settings-input" value="VEL-ZA-">
+                        </div>
+                      </div>
+                      <div class="settings-toggle-row">
+                        <div>
+                          <div class="settings-toggle-title">Include 15% VAT in catalog retail prices</div>
+                          <div class="settings-toggle-subtitle">Complies with South African CPA price display
+                            guidelines.</div>
+                        </div>
+                        <label class="toggle-switch">
+                          <input type="checkbox" id="settingVatInclusive" checked>
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-card">
+                    <div class="settings-card-header">
+                      <div class="settings-card-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                          <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 class="settings-card-title">Payment Gateways & SnapScan</h4>
+                        <p class="settings-card-desc">Enable or disable checkout settlement methods.</p>
+                      </div>
+                    </div>
+                    <div class="settings-card-body">
+                      <div class="settings-toggle-row">
+                        <div>
+                          <div class="settings-toggle-title">Ozow Instant EFT</div>
+                          <div class="settings-toggle-subtitle">Zero card fee direct EFT via FNB, Capitec, Standard
+                            Bank, Nedbank & ABSA.</div>
+                        </div>
+                        <label class="toggle-switch">
+                          <input type="checkbox" id="settingGatewayOzow" checked>
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+
+                      <div class="settings-toggle-row">
+                        <div>
+                          <div class="settings-toggle-title">SnapScan QR Mobile Checkout</div>
+                          <div class="settings-toggle-subtitle">Scan-to-pay mobile QR code settlement with instant
+                            confirmation.</div>
+                        </div>
+                        <label class="toggle-switch">
+                          <input type="checkbox" id="settingGatewaySnapScan" checked>
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+
+                      <div class="settings-toggle-row">
+                        <div>
+                          <div class="settings-toggle-title">Visa / Mastercard 3D Secure 2.0</div>
+                          <div class="settings-toggle-subtitle">Card processing with automated fraud screening and
+                            tokenization.</div>
+                        </div>
+                        <label class="toggle-switch">
+                          <input type="checkbox" id="settingGatewayCards" checked>
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+
+                      <div class="settings-toggle-row">
+                        <div>
+                          <div class="settings-toggle-title">Apple Pay & Google Pay</div>
+                          <div class="settings-toggle-subtitle">One-touch biometric authorization on supported mobile
+                            and web devices.</div>
+                        </div>
+                        <label class="toggle-switch">
+                          <input type="checkbox" id="settingGatewayApplePay" checked>
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-card">
+                    <div class="settings-card-header">
+                      <div class="settings-card-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <path d="M1 3h15v13H1z"></path>
+                          <path d="M16 8h4l3 3v5h-7V8z"></path>
+                          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 class="settings-card-title">Logistics & Nationwide Courier</h4>
+                        <p class="settings-card-desc">Delivery rates, automated waybills, and free shipping limits.</p>
+                      </div>
+                    </div>
+                    <div class="settings-card-body">
+                      <div class="settings-field-row">
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingCourierPartner">Preferred Courier Partner</label>
+                          <select id="settingCourierPartner" class="settings-select">
+                            <option value="The Courier Guy" selected>The Courier Guy (Locker & Door-to-Door)</option>
+                            <option value="DHL Express SA">DHL Express South Africa</option>
+                            <option value="Velora Studio Courier">Velora Dedicated Studio Dispatch</option>
+                          </select>
+                        </div>
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingStandardShipping">Standard Delivery Fee (<span
+                              class="current-curr-code">ZAR</span>)</label>
+                          <input type="number" id="settingStandardShipping" class="settings-input" value="150">
+                        </div>
+                      </div>
+                      <div class="settings-field-row">
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingExpressShipping">Express Same-Day Fee
+                            (Gauteng)</label>
+                          <input type="number" id="settingExpressShipping" class="settings-input" value="280">
+                        </div>
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingFreeShippingThreshold">Free Delivery Threshold
+                            (<span class="current-curr-code">ZAR</span>)</label>
+                          <input type="number" id="settingFreeShippingThreshold" class="settings-input" value="1500">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-card">
+                    <div class="settings-card-header">
+                      <div class="settings-card-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 class="settings-card-title">Inventory Alerts & Thresholds</h4>
+                        <p class="settings-card-desc">Automated studio alerts when physical catalog stock drops.</p>
+                      </div>
+                    </div>
+                    <div class="settings-card-body">
+                      <div class="settings-field-row">
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingLowStockThreshold">Low Stock Warning Trigger
+                            (Units)</label>
+                          <input type="number" id="settingLowStockThreshold" class="settings-input" value="5" min="1"
+                            max="50">
+                        </div>
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingAutoDraftWaybill">Auto-Generate Courier
+                            Waybills</label>
+                          <select id="settingAutoDraftWaybill" class="settings-select">
+                            <option value="enabled" selected>Enabled on 'Paid' Status</option>
+                            <option value="manual">Manual Studio Dispatch Only</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="settings-card">
+                    <div class="settings-card-header">
+                      <div class="settings-card-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 class="settings-card-title">Security & Session Controls</h4>
+                        <p class="settings-card-desc">Authentication timeout and active operator profile.</p>
+                      </div>
+                    </div>
+                    <div class="settings-card-body">
+                      <div class="settings-field-row">
+                        <div class="settings-field-group">
+                          <label class="settings-label">Active Operator Profile</label>
+                          <input type="text" class="settings-input" value="Kristina Evans (Studio Director)" disabled>
+                        </div>
+                        <div class="settings-field-group">
+                          <label class="settings-label" for="settingSessionTimeout">Idle Session Timeout</label>
+                          <select id="settingSessionTimeout" class="settings-select">
+                            <option value="30">30 minutes</option>
+                            <option value="60" selected>60 minutes</option>
+                            <option value="120">2 hours</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <!-- 11. Order Inspection Modal (Unified Studio Modal Theme) -->
+      <div class="dash-modal-backdrop" id="drawerBackdrop" role="dialog" aria-modal="true" aria-labelledby="drawerOrderId">
+        <div class="dash-modal studio-modal-container order-inspection-modal" id="orderDrawer" aria-label="Order Details Modal" data-component="order-drawer">
+
+          <!-- 1. Header (Studio Modal Header) -->
+          <div class="studio-modal-header order-modal-header">
+            <div class="studio-modal-title-group">
+              <div class="order-modal-title-row">
+                <h3 class="studio-modal-heading" id="drawerOrderId">Order #000000</h3>
+                <span class="status-pill status-paid" id="drawerStatusPill">Paid</span>
+              </div>
+              <p class="studio-modal-subheading">
+                Placed on <span id="drawerOrderDate">Jan 1, 00:00</span> · Logistics waybill <strong id="drawerTrackingNumberHeader">TRK-ZA-PENDING</strong>
+              </p>
+            </div>
+
+            <div class="studio-modal-header-actions">
+              <button type="button" class="studio-modal-close-btn" id="closeDrawerBtn" aria-label="Close dialog">
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Scrollable Body (2 Responsive Columns) -->
+          <div class="studio-modal-scrollable-body order-modal-body">
+            <div class="order-modal-grid">
+
+              <!-- Left Column: Order Items & Pricing Breakdown -->
+              <div class="order-modal-col">
+                <section class="studio-form-card">
+                  <div class="studio-card-simple-title">
+                    <h4>Order Items</h4>
+                    <p>Purchased pieces, quantities and atelier catalog records</p>
+                  </div>
+                  <div class="drawer-items-list" id="drawerItemsList"></div>
+
+                  <div class="order-pricing-summary-card">
+                    <div class="order-summary-line">
+                      <span>Items Subtotal</span>
+                      <span id="orderSubtotalAmount">R0.00</span>
+                    </div>
+                    <div class="order-summary-line">
+                      <span>Logistics &amp; Delivery</span>
+                      <span id="orderDeliveryFee">Complimentary</span>
+                    </div>
+                    <div class="order-summary-total-line">
+                      <span class="drawer-total-label">Total Amount</span>
+                      <span class="drawer-total-val" id="drawerTotalAmount">R0.00</span>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- Right Column: Customer Details & Logistics / Driver Dispatch -->
+              <div class="order-modal-col">
+                <!-- Customer Concierge Card -->
+                <section class="studio-form-card">
+                  <div class="studio-card-simple-title">
+                    <h4>Customer Concierge</h4>
+                    <p>Verified purchaser contact details and dispatch communications</p>
+                  </div>
+                  <div class="drawer-customer-card">
+                    <img class="drawer-customer-avatar" id="drawerCustomerAvatar"
+                      src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&h=150&w=150"
+                      alt="Customer"
+                      onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\' viewBox=\'0 0 48 48\'%3E%3Ccircle cx=\'24\' cy=\'24\' r=\'24\' fill=\'%23232030\'/%3E%3Ctext x=\'24\' y=\'29\' fill=\'%23c9a57a\' font-size=\'16\' text-anchor=\'middle\' font-family=\'sans-serif\'%3EV%3C/text%3E%3C/svg%3E'">
+                    <div class="drawer-customer-info">
+                      <div class="drawer-customer-name" id="drawerCustomerName">Customer Name</div>
+                      <div class="drawer-customer-meta">Velora Registered Client</div>
+                    </div>
+                    <div class="drawer-contact-actions">
+                      <a href="mailto:client@example.com" class="contact-action-btn" id="drawerEmailLink" title="Send Email">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                        </svg>
+                      </a>
+                      <a href="tel:+27820000000" class="contact-action-btn" id="drawerPhoneLink" title="Call Customer">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                      </a>
+                      <button type="button" class="contact-action-btn whatsapp" id="drawerWhatsappBtn" title="Message via WhatsApp">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1 3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Logistics & Driver Dispatch Card -->
+                <section class="studio-form-card">
+                  <div class="studio-card-simple-title">
+                    <h4>Logistics &amp; Driver Dispatch</h4>
+                    <p>Courier tracking, regional hub routing and assigned driver</p>
+                  </div>
+
+                  <div class="drawer-logistics-box">
+                    <div class="drawer-logistics-title">Velora Logistics Waybill</div>
+                    <div class="drawer-logistics-trk" id="drawerTrackingNumber">TRK-ZA-000000</div>
+                  </div>
+
+                  <div class="dispatch-details-group">
+                    <div class="dispatch-info-row">
+                      <span class="dispatch-label">Fulfillment Hub:</span>
+                      <span class="dispatch-val" id="drawerTrackingLocation">Velora Fulfillment Centre</span>
+                    </div>
+                    <div class="dispatch-info-row">
+                      <span class="dispatch-label">Delivery Province:</span>
+                      <strong class="dispatch-province-badge" id="drawerDeliveryProvince">Not recorded</strong>
+                    </div>
+                  </div>
+
+                  <div class="driver-assign-box">
+                    <label for="drawerDriverSelect" class="studio-label">Select a driver serving this province</label>
+                    <div class="driver-select-row">
+                      <div class="studio-select-wrapper" style="flex: 1;">
+                        <select id="drawerDriverSelect" class="studio-select"></select>
+                      </div>
+                      <button type="button" class="drawer-btn drawer-btn-dark" id="btnAssignDriver">Assign Driver</button>
+                    </div>
+                    <div id="drawerAssignedDriver" class="assigned-driver-status">No driver assigned</div>
+                    <button type="button" class="drawer-btn drawer-btn-outline" id="btnAddDriverForOrder" hidden>Add Driver</button>
+                  </div>
+                </section>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 3. Footer Bar (Studio Modal Footer) -->
+          <div class="studio-modal-footer order-modal-footer">
+            <div class="order-footer-left">
+              <span class="order-footer-hint">Status actions apply in real time</span>
+            </div>
+            <div class="order-footer-actions">
+              <button type="button" class="drawer-btn drawer-btn-outline is-danger" id="btnDeleteOrder" style="color: #b91c1c;">Delete Order</button>
+              <button type="button" class="drawer-btn drawer-btn-outline" id="btnDeliverOrder" hidden>Mark Delivered</button>
+              <button type="button" class="studio-btn-publish" id="btnTrackOrder">
+                <span>Accept Paid Order</span>
+                <span class="studio-btn-arrow">↗</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal: Add New Product -->
+<div class="dash-modal-backdrop" id="newProductModal">
+  <div class="dash-modal studio-modal-container">
+
+    <!-- 1. Header -->
+    <div class="studio-modal-header">
+      <div class="studio-modal-title-group">
+        <h3 class="studio-modal-heading" id="productModalTitle">Add New Product</h3>
+        <p class="studio-modal-subheading" id="productModalSubheading">
+          Fill in the details to publish a new piece to your store catalog.
+        </p>
+      </div>
+
+      <div class="studio-modal-header-actions">
+        <button type="button" class="studio-modal-close-btn" onclick="window.closeNewProductModal()" aria-label="Close dialog">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. Form Body -->
+    <form id="newProductForm" class="studio-modal-form" novalidate>
+      <div class="studio-modal-scrollable-body">
+        <div id="productFormAlert" class="studio-form-alert" style="display: none;" role="alert"></div>
+
+        <div class="studio-form-columns studio-single-column">
+
+          <!-- Section 1: Basic Information -->
+          <section class="studio-form-card">
+            <div class="studio-card-simple-title">
+              <h4>Basic Information</h4>
+              <p>Primary title, category and collection</p>
+            </div>
+
+            <div class="studio-input-group">
+              <label for="newProdTitle" class="studio-label">
+                Product Name / Title <span class="studio-req">*</span>
+              </label>
+              <input type="text" id="newProdTitle" class="studio-input" placeholder="e.g. Vintage Heavyweight Boxy T-Shirt">
+            </div>
+
+            <div class="studio-grid-2">
+              <div class="studio-input-group">
+                <label for="newProdCategory" class="studio-label">
+                  Category <span class="studio-req">*</span>
+                </label>
+                <div class="studio-select-wrapper">
+                  <select id="newProdCategory" class="studio-select">
+                    <option value="T-Shirts" selected>T-Shirts</option>
+                    <option value="Jeans">Jeans</option>
+                    <option value="Shirts">Shirts</option>
+                    <option value="Hoodies & Sweaters">Hoodies &amp; Sweaters</option>
+                    <option value="Jackets & Outerwear">Jackets &amp; Outerwear</option>
+                    <option value="Trousers & Pants">Trousers &amp; Pants</option>
+                    <option value="Bags">Bags</option>
+                    <option value="Footwear">Footwear</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Objects">Objects &amp; Lifestyle</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="studio-input-group">
+                <label for="newProdEyebrow" class="studio-label">Collection / Brand</label>
+                <input type="text" id="newProdEyebrow" class="studio-input" placeholder="e.g. Velora Essentials">
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 2: Pricing & Inventory -->
+          <section class="studio-form-card">
+            <div class="studio-card-simple-title">
+              <h4>Pricing &amp; Inventory</h4>
+              <p>Retail pricing and available warehouse stock</p>
+            </div>
+
+            <div class="studio-grid-3">
+              <div class="studio-input-group">
+                <label for="newProdPrice" class="studio-label">
+                  Retail Price (ZAR) <span class="studio-req">*</span>
+                </label>
+                <div class="studio-prefix-input">
+                  <span class="studio-input-prefix">R</span>
+                  <input type="number" id="newProdPrice" class="studio-input studio-input-with-prefix" placeholder="450" min="0" step="0.01">
+                </div>
+              </div>
+
+              <div class="studio-input-group">
+                <label for="newProdComparePrice" class="studio-label">Compare-at Price (ZAR)</label>
+                <div class="studio-prefix-input">
+                  <span class="studio-input-prefix">R</span>
+                  <input type="number" id="newProdComparePrice" class="studio-input studio-input-with-prefix" placeholder="590" min="0" step="0.01">
+                </div>
+              </div>
+
+              <div class="studio-input-group">
+                <label for="newProdCostPrice" class="studio-label">Cost per Item (ZAR)</label>
+                <div class="studio-prefix-input">
+                  <span class="studio-input-prefix">R</span>
+                  <input type="number" id="newProdCostPrice" class="studio-input studio-input-with-prefix" placeholder="180" min="0" step="0.01">
+                </div>
+              </div>
+            </div>
+
+            <div class="studio-grid-2" style="margin-top: 14px;">
+              <div class="studio-input-group">
+                <label for="newProdStock" class="studio-label">
+                  Stock Quantity <span class="studio-req">*</span>
+                </label>
+                <input type="number" id="newProdStock" class="studio-input" placeholder="15" min="0">
+              </div>
+
+              <div class="studio-input-group">
+                <label for="newProdStockStatus" class="studio-label">Inventory Status</label>
+                <div class="studio-select-wrapper">
+                  <select id="newProdStockStatus" class="studio-select">
+                    <option value="in_stock" selected>In Stock (Ready to fulfill)</option>
+                    <option value="low_stock">Low Stock Warning</option>
+                    <option value="preorder">Pre-Order / Made to Order</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 3: Product Imagery (URL & File Upload) -->
+          <section class="studio-form-card studio-media-section">
+            <div class="studio-card-simple-title">
+              <div class="studio-media-title-row">
+                <div>
+                  <h4>Product Images</h4>
+                  <p>Add product visuals using file upload and/or direct web URLs</p>
+                </div>
+                <span class="studio-media-badge">3 Image Slots</span>
+              </div>
+            </div>
+
+            <!-- Main Product Image -->
+            <div class="studio-media-slot studio-main-media-slot" data-slot="1">
+              <div class="studio-slot-header">
+                <div class="studio-slot-title-wrap">
+                  <span class="studio-slot-num">1</span>
+                  <label for="newProdImage" class="studio-label studio-slot-label">
+                    Primary Cover Image <span class="studio-req">*</span>
+                  </label>
+                </div>
+                <div class="studio-media-mode-pills" role="tablist">
+                  <button type="button" class="studio-mode-pill active" id="modeBtnUpload1" onclick="window.setProductImageMode(1, 'upload')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Upload File</span>
+                  </button>
+                  <button type="button" class="studio-mode-pill" id="modeBtnUrl1" onclick="window.setProductImageMode(1, 'url')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                    </svg>
+                    <span>Image URL</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Upload View 1 -->
+              <div class="studio-upload-view" id="slotUploadView1">
+                <div class="studio-dropzone-box" id="dropzoneBox1" onclick="document.getElementById('newProdImageFile').click()">
+                  <div class="studio-dropzone-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+                      <circle cx="9" cy="9" r="2"></circle>
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+                    </svg>
+                  </div>
+                  <div class="studio-dropzone-copy">
+                    <span class="studio-dropzone-cta"><strong>Click to upload</strong> or drag &amp; drop</span>
+                    <span class="studio-dropzone-sub">PNG, JPG, WEBP or GIF (Max 10MB)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- URL View 1 -->
+              <div class="studio-url-view" id="slotUrlView1" style="display: none;">
+                <div class="studio-url-input-wrap">
+                  <div class="studio-url-field-group">
+                    <svg class="studio-url-field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                    </svg>
+                    <input type="url" id="newProdImage" class="studio-input studio-input-with-icon" placeholder="https://images.pexels.com/photos/..." autocomplete="off">
+                  </div>
+                </div>
+                <div class="studio-sample-presets">
+                  <span class="studio-preset-label">Quick samples:</span>
+                  <button type="button" class="studio-preset-btn" onclick="window.applySampleImageUrl(1, 'https://images.pexels.com/photos/27204251/pexels-photo-27204251.jpeg?auto=compress&cs=tinysrgb&h=650&w=940')">Sneakers</button>
+                  <button type="button" class="studio-preset-btn" onclick="window.applySampleImageUrl(1, 'https://images.pexels.com/photos/27046146/pexels-photo-27046146.jpeg?auto=compress&cs=tinysrgb&h=650&w=940')">Tote Bag</button>
+                  <button type="button" class="studio-preset-btn" onclick="window.applySampleImageUrl(1, 'https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&h=650&w=940')">T-Shirt</button>
+                </div>
+              </div>
+
+              <!-- Hidden File Input 1 -->
+              <input type="file" id="newProdImageFile" accept="image/*" style="display: none;">
+
+              <!-- Live Preview Card 1 -->
+              <div class="studio-image-preview-card" id="slotPreview1" style="display: none;">
+                <div class="studio-preview-thumb-wrap">
+                  <img id="slotPreviewImg1" src="" alt="Primary Preview" class="studio-preview-thumb">
+                  <span class="studio-preview-status-pill">Primary</span>
+                </div>
+                <div class="studio-preview-meta">
+                  <div class="studio-preview-name" id="slotPreviewName1">Image Loaded</div>
+                  <div class="studio-preview-sub" id="slotPreviewSub1">Ready to publish</div>
+                </div>
+                <div class="studio-preview-actions">
+                  <button type="button" class="studio-preview-btn-change" onclick="window.triggerSlotChange(1)" title="Choose another image">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                    </svg>
+                    <span>Change</span>
+                  </button>
+                  <button type="button" class="studio-preview-btn-remove" onclick="window.clearProductSlot(1)" title="Remove image" aria-label="Remove image">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gallery Row (Image 2 & Image 3) -->
+            <div class="studio-grid-2 studio-gallery-slots-row">
+              <!-- Gallery Image 2 -->
+              <div class="studio-media-slot studio-gallery-media-slot" data-slot="2">
+                <div class="studio-slot-header">
+                  <div class="studio-slot-title-wrap">
+                    <span class="studio-slot-num">2</span>
+                    <label for="newProdImage2" class="studio-label studio-slot-label">Gallery Angle 2</label>
+                  </div>
+                  <div class="studio-media-mode-pills" role="tablist">
+                    <button type="button" class="studio-mode-pill active" id="modeBtnUpload2" onclick="window.setProductImageMode(2, 'upload')">Upload</button>
+                    <button type="button" class="studio-mode-pill" id="modeBtnUrl2" onclick="window.setProductImageMode(2, 'url')">URL</button>
+                  </div>
+                </div>
+
+                <div class="studio-upload-view" id="slotUploadView2">
+                  <div class="studio-dropzone-box studio-dropzone-compact" id="dropzoneBox2" onclick="document.getElementById('newProdImage2File').click()">
+                    <div class="studio-dropzone-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                    </div>
+                    <div class="studio-dropzone-copy">
+                      <span class="studio-dropzone-cta">Upload or drop</span>
+                      <span class="studio-dropzone-sub">Detail angle</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="studio-url-view" id="slotUrlView2" style="display: none;">
+                  <div class="studio-url-field-group">
+                    <svg class="studio-url-field-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                    </svg>
+                    <input type="url" id="newProdImage2" class="studio-input studio-input-with-icon studio-input-compact" placeholder="https://...">
+                  </div>
+                </div>
+
+                <input type="file" id="newProdImage2File" accept="image/*" style="display: none;">
+
+                <div class="studio-image-preview-card studio-preview-compact" id="slotPreview2" style="display: none;">
+                  <img id="slotPreviewImg2" src="" alt="Gallery Angle 2" class="studio-preview-thumb">
+                  <div class="studio-preview-meta">
+                    <div class="studio-preview-name" id="slotPreviewName2">Angle 2</div>
+                    <div class="studio-preview-sub">Ready</div>
+                  </div>
+                  <div class="studio-preview-actions">
+                    <button type="button" class="studio-preview-btn-remove" onclick="window.clearProductSlot(2)" title="Remove image" aria-label="Remove image">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gallery Image 3 -->
+              <div class="studio-media-slot studio-gallery-media-slot" data-slot="3">
+                <div class="studio-slot-header">
+                  <div class="studio-slot-title-wrap">
+                    <span class="studio-slot-num">3</span>
+                    <label for="newProdImage3" class="studio-label studio-slot-label">Gallery Angle 3</label>
+                  </div>
+                  <div class="studio-media-mode-pills" role="tablist">
+                    <button type="button" class="studio-mode-pill active" id="modeBtnUpload3" onclick="window.setProductImageMode(3, 'upload')">Upload</button>
+                    <button type="button" class="studio-mode-pill" id="modeBtnUrl3" onclick="window.setProductImageMode(3, 'url')">URL</button>
+                  </div>
+                </div>
+
+                <div class="studio-upload-view" id="slotUploadView3">
+                  <div class="studio-dropzone-box studio-dropzone-compact" id="dropzoneBox3" onclick="document.getElementById('newProdImage3File').click()">
+                    <div class="studio-dropzone-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                    </div>
+                    <div class="studio-dropzone-copy">
+                      <span class="studio-dropzone-cta">Upload or drop</span>
+                      <span class="studio-dropzone-sub">Back/lifestyle</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="studio-url-view" id="slotUrlView3" style="display: none;">
+                  <div class="studio-url-field-group">
+                    <svg class="studio-url-field-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                    </svg>
+                    <input type="url" id="newProdImage3" class="studio-input studio-input-with-icon studio-input-compact" placeholder="https://...">
+                  </div>
+                </div>
+
+                <input type="file" id="newProdImage3File" accept="image/*" style="display: none;">
+
+                <div class="studio-image-preview-card studio-preview-compact" id="slotPreview3" style="display: none;">
+                  <img id="slotPreviewImg3" src="" alt="Gallery Angle 3" class="studio-preview-thumb">
+                  <div class="studio-preview-meta">
+                    <div class="studio-preview-name" id="slotPreviewName3">Angle 3</div>
+                    <div class="studio-preview-sub">Ready</div>
+                  </div>
+                  <div class="studio-preview-actions">
+                    <button type="button" class="studio-preview-btn-remove" onclick="window.clearProductSlot(3)" title="Remove image" aria-label="Remove image">✕</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 4: Variants, Specifications & Details -->
+          <section class="studio-form-card">
+            <div class="studio-card-simple-title">
+              <h4>Variants &amp; Details</h4>
+              <p>Sizes, colors, silhouette and care instructions</p>
+            </div>
+
+            <div class="studio-grid-2">
+              <div class="studio-input-group">
+                <label for="newProdSizes" class="studio-label">Available Sizes</label>
+                <input type="text" id="newProdSizes" class="studio-input" placeholder="e.g. S, M, L, XL or 28, 30, 32">
+              </div>
+
+              <div class="studio-input-group">
+                <label for="newProdColors" class="studio-label">Available Colors</label>
+                <input type="text" id="newProdColors" class="studio-input" placeholder="e.g. Washed Black, Vintage White">
+              </div>
+            </div>
+
+            <div class="studio-grid-2" style="margin-top: 14px;">
+              <div class="studio-input-group">
+                <label for="newProdFit" class="studio-label">Fit / Silhouette</label>
+                <input type="text" id="newProdFit" class="studio-input" placeholder="e.g. Boxy Oversized Fit">
+              </div>
+
+              <div class="studio-input-group">
+                <label for="newProdDetails" class="studio-label">Fabric &amp; Specifications</label>
+                <input type="text" id="newProdDetails" class="studio-input" placeholder="e.g. 100% Combed Cotton (240 GSM)">
+              </div>
+            </div>
+
+            <div class="studio-input-group" style="margin-top: 14px;">
+              <label for="newProdDescription" class="studio-label">Product Description</label>
+              <textarea id="newProdDescription" class="studio-textarea" rows="3" placeholder="Describe the product styling, fit, texture, and everyday versatility..."></textarea>
+            </div>
+
+            <div class="studio-grid-2" style="margin-top: 14px;">
+              <div class="studio-input-group">
+                <label for="newProdCare" class="studio-label">Care Instructions</label>
+                <textarea id="newProdCare" class="studio-textarea studio-textarea-compact" rows="2" placeholder="e.g. Cold wash with like colors. Hang dry."></textarea>
+              </div>
+
+              <div class="studio-input-group">
+                <label for="newProdDelivery" class="studio-label">Shipping &amp; Fulfillment</label>
+                <textarea id="newProdDelivery" class="studio-textarea studio-textarea-compact" rows="2" placeholder="e.g. Dispatched within 24 hours. Express courier."></textarea>
+              </div>
+            </div>
+
+            <input type="hidden" id="newProdRating" value="5">
+            <input type="hidden" id="newProdReviews" value="0">
+          </section>
+
+        </div>
+      </div>
+
+      <!-- 3. Footer -->
+      <div class="studio-modal-footer">
+        <div class="studio-footer-status">
+          <span id="studioFooterStatus">Ready to publish to online store</span>
+        </div>
+
+        <div class="studio-footer-actions">
+          <button type="button" class="studio-btn-discard" onclick="window.closeNewProductModal()">
+            Discard
+          </button>
+          <button type="submit" class="studio-btn-publish" id="btnSubmitProduct">
+            <span class="studio-btn-text">Publish Product to Store</span>
+            <span class="studio-btn-arrow">↗</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <!-- Modal: Add / Edit Courier Driver (Unified Studio Modal Theme) -->
+  <div class="dash-modal-backdrop" id="driverModal" role="dialog" aria-modal="true" aria-labelledby="driverModalHeading">
+    <div class="dash-modal studio-modal-container driver-modal-container" style="max-width: 580px;">
+
+      <!-- 1. Header -->
+      <div class="studio-modal-header">
+        <div class="studio-modal-title-group">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <h3 class="studio-modal-heading" id="driverModalHeading">Add Courier Driver</h3>
+            <span class="status-pill status-paid" id="driverModalBadge" style="font-size: 11px;">Fleet Operations</span>
+          </div>
+          <p class="studio-modal-subheading" id="driverModalSubheading">
+            Register regional logistics drivers for automated province order fulfillment and dispatch.
+          </p>
+        </div>
+
+        <div class="studio-modal-header-actions">
+          <button type="button" class="studio-modal-close-btn" onclick="window.closeDriverModal()" aria-label="Close dialog">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Form Body -->
+      <form id="driverCreateForm" class="studio-modal-form" novalidate>
+        <div class="studio-modal-scrollable-body" style="padding: 24px;">
+          <div id="driverFormMessage" role="status" aria-live="polite" style="margin-bottom: 16px; font-size: 13px; font-weight: 500;"></div>
+
+          <section class="studio-form-card" style="border: none; padding: 0; background: transparent; box-shadow: none;">
+            <div class="studio-input-group">
+              <label class="studio-label" for="driverFullName">Full Name <span class="studio-req">*</span></label>
+              <input class="studio-input" id="driverFullName" name="fullName" type="text" placeholder="e.g. Sipho Dlamini" required maxlength="150">
+            </div>
+
+            <div class="studio-input-group">
+              <label class="studio-label" for="driverEmail">Email Address <span class="studio-req">*</span></label>
+              <input class="studio-input" id="driverEmail" name="email" type="email" placeholder="e.g. sipho.driver@velora.co.za" required maxlength="254">
+            </div>
+
+            <div class="studio-grid-2">
+              <div class="studio-input-group">
+                <label class="studio-label" for="driverPhone">Phone Number <span class="studio-req">*</span></label>
+                <input class="studio-input" id="driverPhone" name="phone" type="tel" placeholder="e.g. +27 82 555 1234" required maxlength="30">
+              </div>
+
+              <div class="studio-input-group">
+                <label class="studio-label" for="driverProvince">Service Province <span class="studio-req">*</span></label>
+                <div class="studio-select-wrapper">
+                  <select class="studio-select" id="driverProvince" name="province" required>
+                    <option value="">Select service province</option>
+                    <option>Eastern Cape</option>
+                    <option>Free State</option>
+                    <option>Gauteng</option>
+                    <option>KwaZulu-Natal</option>
+                    <option>Limpopo</option>
+                    <option>Mpumalanga</option>
+                    <option>Northern Cape</option>
+                    <option>North West</option>
+                    <option>Western Cape</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- 3. Footer -->
+        <div class="studio-modal-footer" style="padding: 16px 24px; background: #ffffff; border-top: 1px solid var(--dash-border); display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+          <button type="button" class="studio-btn-discard" onclick="window.closeDriverModal()">
+            Cancel
+          </button>
+          <button type="submit" class="studio-btn-publish" id="driverSubmitBtn">
+            <span class="studio-btn-text" id="driverSubmitBtnText">Add Driver</span>
+            <span class="studio-btn-arrow">↗</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Product Detail & Customer Presentation Modal (Unified Studio Modal) -->
+  <div class="dash-modal-backdrop" id="productDetailModal" role="dialog" aria-modal="true"
+    aria-labelledby="productTitle">
+    <div class="dash-modal studio-modal-container pv-modal-container">
+
+      <!-- 1. Header (Matching Studio Modal Header) -->
+      <div class="studio-modal-header pv-studio-header">
+        <div class="studio-modal-title-group">
+          <!-- Breadcrumbs / Eyebrow metadata -->
+          <div class="pv-header-breadcrumbs" id="pvBreadcrumbs">
+            <span class="pv-breadcrumb-root" onclick="window.closeProductDetailModal()">Catalog</span>
+            <span class="pv-breadcrumb-sep">|</span>
+            <span id="breadcrumbCategory" class="pv-breadcrumb-cat">Footwear</span>
+            <span class="pv-breadcrumb-sep">|</span>
+            <span id="breadcrumbTitle" class="pv-breadcrumb-title">Cloud-step sneakers</span>
+          </div>
+          <p class="studio-modal-subheading">
+            Live catalog presentation, store inventory levels, and merchandising specifications.
+          </p>
+        </div>
+
+        <div class="pv-header-actions">
+          <button type="button" class="studio-modal-close-btn" onclick="window.closeProductDetailModal()"
+            aria-label="Close dialog">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Scrollable Body with 2 Generous Columns -->
+      <div class="studio-modal-scrollable-body pv-modal-body">
+        <div class="pv-detail-layout" id="productInfo">
+
+          <!-- Left Column: Gallery Showcase + Economics & Inventory -->
+          <div class="pv-col-left">
+
+            <!-- Showcase Gallery Card -->
+            <section class="studio-form-card pv-gallery-card">
+              <div class="studio-card-simple-title pv-card-header-row">
+                <div>
+                  <h4>Visual Gallery</h4>
+                  <p>Catalog imagery and multi-angle presentation</p>
+                </div>
+                
+              </div>
+
+              <div class="product-gallery" id="pvProductGallery">
+                <div class="gallery-main">
+                  <img id="mainProductImage"
+                    src="https://images.pexels.com/photos/27204251/pexels-photo-27204251.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+                    alt="Product view">
+                </div>
+                <div class="gallery-thumbs" id="galleryThumbs">
+                  <!-- Injected dynamically based on item images -->
+                </div>
+              </div>
+            </section>
+
+            <!-- Economics & Inventory Card -->
+            <section class="studio-form-card pv-metrics-card">
+              <div class="studio-card-simple-title">
+                <h4>Inventory & Unit Economics</h4>
+                <p>Real-time stock balance, procurement cost, and margin</p>
+              </div>
+
+              <div class="pv-admin-metrics-grid">
+                <div class="pv-metric-tile">
+                  <span class="pv-metric-label">Units in Stock</span>
+                  <strong class="pv-metric-val" id="pvMetricStock">35</strong>
+                  <span class="pv-metric-sub">Current floor balance</span>
+                </div>
+                <div class="pv-metric-tile">
+                  <span class="pv-metric-label">Unit Cost</span>
+                  <strong class="pv-metric-val" id="pvMetricCost">R180</strong>
+                  <span class="pv-metric-sub">Procurement cost</span>
+                </div>
+                
+              </div>
+            </section>
+
+          </div>
+
+          <!-- Right Column: Product Overview, Sizing & Details -->
+          <div class="pv-col-right">
+
+            <!-- Primary Overview Card -->
+            <section class="studio-form-card pv-overview-card">
+              <div class="pv-title-meta-row">
+                <span class="eyebrow" id="productEyebrow">Weekend Uniform</span>
+                <div class="rating">
+                  <span id="productRatingStars">★★★★★</span>
+                  <u id="productReviewsCount">12 reviews</u>
+                </div>
+              </div>
+
+              <h1 class="pv-hero-title" id="productTitle">Cloud-step <em>sneakers.</em></h1>
+
+              <div class="detail-price-wrap">
+                <p class="detail-price" id="productPrice">R1 150</p>
+                <span class="detail-compare-price" id="productComparePrice"></span>
+              </div>
+
+              <p class="detail-description" id="productDesc">
+                A light, considered everyday sneaker with a soft step and a clean silhouette.
+                Made for long walks, slow mornings, and everything in between.
+              </p>
+            </section>
+
+            <!-- Sizing & Variants Card -->
+            <section class="studio-form-card pv-variants-card">
+              <div class="option-row">
+                <label class="studio-label">Available Sizing</label>
+                <span class="detail-fit-badge" id="productFitBadge">Regular Classic Fit</span>
+              </div>
+
+              <div class="size-options" id="productSizesContainer">
+                <button type="button" class="selected">36</button>
+                <button type="button">37</button>
+                <button type="button">38</button>
+                <button type="button">39</button>
+                <button type="button">40</button>
+              </div>
+
+              <div class="detail-colors-wrap" id="productColorsWrap">
+                <div class="option-row" style="margin-top: 14px;">
+                  <label class="studio-label">Colour Palette</label>
+                </div>
+                <div class="color-options" id="productColorsContainer">
+                  <!-- Color pills -->
+                </div>
+              </div>
+            </section>
+
+            <!-- Specifications & Delivery Card -->
+            <section class="studio-form-card pv-accordions-card">
+              <div class="studio-card-simple-title">
+                <h4>Product Details & Policies</h4>
+                <p>Customer-facing materials, packaging, and care guidelines</p>
+              </div>
+
+              <div class="detail-accordions">
+                <details open id="accordionDetails" class="pv-accordion-item">
+                  <summary>Product details <span>＋</span></summary>
+                  <p id="detailsContent">Breathable textile upper, cushioned footbed, and durable rubber sole. Designed in
+                    Cape Town and made for daily wear.</p>
+                </details>
+                <details id="accordionDelivery" class="pv-accordion-item">
+                  <summary>Delivery &amp; returns <span>＋</span></summary>
+                  <p id="deliveryContent">Complimentary delivery over R800. Returns are accepted within 14 days of
+                    delivery in pristine original condition.</p>
+                </details>
+                <details id="accordionCare" class="pv-accordion-item">
+                  <summary>Care notes <span>＋</span></summary>
+                  <p id="careContent">Wipe gently with a soft, damp cloth. Allow to air dry away from direct heat.</p>
+                </details>
+              </div>
+            </section>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3. Footer Bar (Matching Studio Modal Footer) -->
+      <div class="studio-modal-footer pv-studio-footer">
+
+        <div class="studio-footer-actions pv-footer-right">
+          
+          <button type="button" class="studio-btn-publish" id="addToBag">
+            <span>Edit Specifications</span>
+            <span class="studio-btn-arrow">↗</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Velora Studio Global Confirmation Modal -->
+  <div class="dash-modal-backdrop" id="veloraConfirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="dash-modal velora-confirm-dialog">
+      <div class="confirm-dialog-header">
+        <div class="confirm-dialog-icon-wrap" id="confirmDialogIconWrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div class="confirm-dialog-titles">
+          <h3 id="confirmModalTitle">Confirm Action</h3>
+          <p id="confirmModalSubtitle">Please verify before proceeding.</p>
+        </div>
+        <button type="button" class="studio-modal-close-btn confirm-dialog-close" id="confirmModalCloseBtn" aria-label="Close dialog">✕</button>
+      </div>
+
+      <div class="confirm-dialog-body">
+        <p id="confirmModalMessage" class="confirm-modal-message">
+          Are you sure you want to proceed with this action?
+        </p>
+        <div class="confirm-item-preview" id="confirmItemPreview" style="display: none;">
+          <div class="confirm-item-thumb">
+            <img id="confirmItemImg" src="" alt="Item preview">
+          </div>
+          <div class="confirm-item-info">
+            <span class="confirm-item-cat" id="confirmItemCat">Footwear</span>
+            <strong class="confirm-item-title" id="confirmItemTitle">Product Title</strong>
+            <span class="confirm-item-meta" id="confirmItemMeta">Stock: 12 · Price: R1,150</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirm-dialog-footer">
+        <button type="button" class="confirm-btn-cancel" id="confirmModalCancelBtn">Cancel</button>
+        <button type="button" class="confirm-btn-action is-danger" id="confirmModalActionBtn">Confirm Delete</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="dash-modal-backdrop" id="paymentReceiptModal">
+    <div class="dash-modal payment-receipt-modal">
+      <div class="dash-modal-header">
+        <h3>Payment Settlement Receipt</h3>
+        <button type="button" class="drawer-close-btn" onclick="window.closePaymentReceiptModal()">✕</button>
+      </div>
+      <div class="dash-modal-body" id="paymentReceiptContent">
+        <div class="receipt-card-box">
+          <div class="receipt-header-line">
+            <div class="receipt-status-pill" id="receiptStatusPill">Settled</div>
+            <div class="receipt-ref-code" id="receiptRefCode">PAY-ZA-000000</div>
+          </div>
+
+          <table class="receipt-details-table">
+            <tbody>
+              <tr><th scope="row">Order Reference</th><td id="receiptOrderId">#000000</td></tr>
+              <tr><th scope="row">Timestamp</th><td id="receiptTimestamp">--</td></tr>
+              <tr><th scope="row">Customer</th><td id="receiptCustomer">--</td></tr>
+              <tr><th scope="row">Payment Gateway</th><td id="receiptGateway">Ozow Instant EFT</td></tr>
+              <tr><th scope="row">Settlement Bank</th><td id="receiptBank">Standard Bank of SA</td></tr>
+              <tr class="receipt-total-row"><th scope="row">Gross Amount</th><td id="receiptGrossAmount">R0.00</td></tr>
+              <tr><th scope="row">Gateway Fee (est.)</th><td id="receiptFeeAmount">-R0.00</td></tr>
+              <tr class="receipt-net-row"><th scope="row">Net Settlement</th><td id="receiptNetAmount">R0.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="dash-modal-footer">
+        <button type="button" class="drawer-btn drawer-btn-dark"
+          onclick="window.closePaymentReceiptModal()">Done</button>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="velora-toast-container" id="veloraToastContainer"></div>
+
+  <!-- Core Modular Data & Controller Scripts -->
+  <script src="./js/data.js"></script>
+  <script src="./js/currency.js"></script>
+  <script src="./js/notifications.js"></script>
+  <script src="./js/overview.js"></script>
+  <script src="./js/orders.js"></script>
+  <script src="./js/drivers.js"></script>
+  <script src="./js/order-drawer.js"></script>
+  <script src="./js/returns.js"></script>
+  <script src="./js/inventory.js"></script>
+  <script src="./js/customers.js"></script>
+  <script src="./js/payments.js"></script>
+  <script src="./js/settings.js"></script>
+  <script src="./js/modals.js"></script>
+  <script src="./js/search.js"></script>
+  <script src="./js/formLogic.js"></script>
+  <script src="./js/ValidationAndAuth.js"></script>
+  <script src="./js/productLogic.js"></script>
+  <script src="./js/app.js"></script>
+  <script src="./dashboard.js"></script>
+  <script src="./js/component-renderer.js"></script>
+</body>
+
+</html>

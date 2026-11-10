@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Contact LEADWAY POWDERS for product, bulk, specification, flavour, order and delivery enquiries.">
+    <meta property="og:title" content="Contact Us — LEADWAY POWDERS Online Store">
+    <meta property="og:description"
+        content="Use the enquiry form for product and order assistance. LEADWAY POWDERS contact details will be added when confirmed.">
+    <meta property="og:type" content="website">
+    <title>Contact Us — LEADWAY POWDERS Online Store</title>
+    <link rel="icon" type="image/png" href="../images/LandingPageImages/favicon.png?v=2">
+
+    <!-- Google Fonts: Ubuntu -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/contact.css">
+</head>
+
+<body id="top">
+
+    <!-- Announcement bar -->
+    <div class="announcement" id="announcementBar">
+        <span>Product and order support</span>
+        <a href="shop.html#catalog">Browse products <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <!-- Header / navigation -->
+    <header class="site-header" id="siteHeader">
+        <a class="brand" href="shop.html" aria-label="LEADWAY POWDERS home" id="brandLogo"><img src="../images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+
+        <nav class="desktop-nav" aria-label="Primary navigation" id="desktopNav">
+            <a href="../index.html">Home</a>
+            <a href="./shop.html">Shop</a>
+            <a href="./about.html">About</a>
+            <a class="active" href="contact.html">Contact</a>
+        </nav>
+
+        <div class="header-actions" id="headerActions">
+            <button class="icon-button search-button" type="button" aria-label="Search collection" id="searchButton">
+                <span></span>
+            </button>
+            <a class="header-account-link" href="auth.html" id="headerAccountBtn" aria-label="Account">
+                <svg class="account-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span class="account-btn-label" id="headerAccountText">Account</span>
+            </a>
+            <a class="icon-button bag-button" href="cart.html" aria-label="View shopping bag" id="bagButton">
+                <span id="cartCount">0</span>
+            </a>
+            <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false" id="menuButton">
+                <i></i><i></i>
+            </button>
+        </div>
+
+        <!-- Mobile Nav -->
+        <nav class="mobile-nav" aria-label="Mobile navigation" id="mobileNav">
+            <a href="../index.html">Home</a>
+            <a href="./shop.html">Shop</a>
+            <a href="./about.html">About</a>
+            <a class="active" href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <main id="mainContent">
+
+        <!-- Contact Hero -->
+
+        <!-- Main Contact Container -->
+        <div class="contact-container">
+            <div class="contact-grid">
+
+                <!-- Left Form Column -->
+                <div class="contact-form-card" id="contactFormCard">
+                    <div class="contact-form-header">
+                        <h2>Send a <em>message.</em></h2>
+                        <p>Send us a product, bulk, specification, flavour, order or delivery enquiry.</p>
+                    </div>
+
+                    <form id="contactForm">
+                        <div class="contact-form-fields">
+
+                            <div class="contact-form-group">
+                                <label for="contactName">Full Name <span>*</span></label>
+                                <input type="text" id="contactName" name="name" placeholder="Your name"
+                                    required>
+                            </div>
+
+                            <div class="contact-form-group">
+                                <label for="contactEmail">Email Address <span>*</span></label>
+                                <input type="email" id="contactEmail" name="email" placeholder="elena@example.com"
+                                    required>
+                            </div>
+
+                            <div class="contact-form-group">
+                                <label for="contactTopic">Inquiry Topic <span>*</span></label>
+                                <select id="contactTopic" name="topic" required>
+                                    <option value="product">Product Enquiries</option>
+                                    <option value="bulk">Bulk Product Enquiries</option>
+                                    <option value="specifications">Product Specifications</option>
+                                    <option value="flavour">Flavour Enquiries</option>
+                                    <option value="order">Order Assistance</option>
+                                    <option value="delivery">Delivery Enquiries</option>
+                                    <option value="other">General Customer Support</option>
+                                </select>
+                            </div>
+
+                            <div class="contact-form-group">
+                                <label for="contactOrderNumber">Order Number (Optional)</label>
+                                <input type="text" id="contactOrderNumber" name="orderNumber"
+                                    placeholder="Enter your order number, if available">
+                            </div>
+
+                            <div class="contact-form-group full-width">
+                                <label for="contactSubject">Subject <span>*</span></label>
+                                <input type="text" id="contactSubject" name="subject"
+                                    placeholder="How can we assist you today?" required>
+                            </div>
+
+                            <div class="contact-form-group full-width">
+                                <label for="contactMessage">Your Message <span>*</span></label>
+                                <textarea id="contactMessage" name="message"
+                                    placeholder="Provide details regarding your inquiry..." required></textarea>
+                            </div>
+
+                            <button class="contact-submit-btn" type="submit" id="contactSubmitBtn">
+                                <span>Send Message</span>
+                                <span aria-hidden="true">↗</span>
+                            </button>
+
+                        </div>
+
+                        <!-- Realistic Feedback Banner -->
+                        <div class="contact-feedback-banner" id="contactFeedback" role="alert">
+                            <span style="font-size: 18px; font-weight: bold; line-height: 1;">✓</span>
+                            <div>
+                                <strong>Thank you for contacting LEADWAY POWDERS.</strong>
+                                <span>Your enquiry has been recorded. Please check the contact details provided on this page as they become available.</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Sidebar Info Column -->
+                <aside class="contact-sidebar" id="contactSidebar">
+
+                    <!-- Direct Concierge Channels -->
+                    <div class="contact-info-card" id="directChannelsCard">
+                        <h3>Contact Details</h3>
+                        <ul class="channel-list">
+                            <li class="channel-item">
+                                <span class="channel-label">Email</span>
+                                <span class="channel-value">To be confirmed</span>
+                                <span class="channel-sub">Use the enquiry form for now.</span>
+                            </li>
+                            <li class="channel-item">
+                                <span class="channel-label">Telephone</span>
+                                <span class="channel-value">To be confirmed</span>
+                                <span class="channel-sub">Contact details will be added when available.</span>
+                            </li>
+                            <li class="channel-item">
+                                <span class="channel-label">Bulk Enquiries</span>
+                                <span class="channel-value">Use the enquiry form</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Business contact information -->
+                    <div class="contact-info-card" id="studioLocationCard">
+                        <h3>Business Information</h3>
+                        <p style="font-size: 13.5px; color: var(--ink); font-weight: 600; margin-bottom: 4px;">LEADWAY POWDERS</p>
+                        <p style="font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 16px;">
+                            Physical address: To be confirmed
+                        </p>
+
+                        <table class="hours-table">
+                            <tbody>
+                                <tr>
+                                    <td>Email</td>
+                                    <td>To be confirmed</td>
+                                </tr>
+                                <tr>
+                                    <td>Telephone</td>
+                                    <td>To be confirmed</td>
+                                </tr>
+                                <tr>
+                                    <td>Business hours</td>
+                                    <td>To be confirmed</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </aside>
+
+            </div>
+        </div>
+
+        <!-- FAQ Accordion -->
+        <section class="faq-section" id="faqSection">
+            <div class="faq-inner">
+                <div class="faq-header">
+                    <p class="eyebrow">Frequently Asked</p>
+                    <h2>Quick <em>answers.</em></h2>
+                    <p>Answers to common product and order questions.</p>
+                </div>
+
+                <div class="faq-list">
+                    <div class="faq-item active" id="faq-1">
+                        <button class="faq-question" type="button" aria-expanded="true">
+                            <span>Where can I find delivery information?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Delivery options and charges, when available, are shown during checkout. Contact us through the enquiry form if you need help with a delivery question.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" id="faq-2">
+                        <button class="faq-question" type="button" aria-expanded="false">
+                            <span>How can I get help with an order?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Use the contact form and include your order number, if you have one, so we can assist with your enquiry.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" id="faq-3">
+                        <button class="faq-question" type="button" aria-expanded="false">
+                            <span>Can I ask about bulk products or specifications?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes. Select the relevant topic in the enquiry form and include the product name and any details you need confirmed.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" id="faq-4">
+                        <button class="faq-question" type="button" aria-expanded="false">
+                            <span>Where can I check product flavours and specifications?</span>
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Check the individual product listing for catalogue and package information that is available. You can also send a product specification or flavour enquiry using the form.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Studio Showroom Visual Banner -->
+        <div class="studio-banner-section" id="studioBannerSection">
+            <div class="studio-banner-card">
+                <img src="https://www.allwinfood.com/storage/media/products/products%20banner/products-02.jpg"
+                    onerror="this.onerror=null;this.src='https://images.pexels.com/photos/6625907/pexels-photo-6625907.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';"
+                    alt="" loading="lazy">
+                <div class="studio-banner-overlay">
+                    <h3>Browse LEADWAY POWDERS</h3>
+                    <p>Explore available food and beverage powder products or send us a product enquiry.</p>
+                    <a href="shop.html#catalog">Browse Products <span aria-hidden="true">→</span></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter Section (Contact Page Standalone) -->
+        <section class="newsletter-contact" id="newsletter-contact">
+            <div class="newsletter-inner-contact">
+                <div class="newsletter-text-contact">
+                    <p class="eyebrow-contact">PRODUCT UPDATES</p>
+                    <h2>Powder products, <em>occasionally.</em></h2>
+                    <p>Receive updates about LEADWAY POWDERS products and catalogue availability.</p>
+                </div>
+                <form class="newsletter-form-contact" id="newsletterForm-contact">
+                    <input type="email" placeholder="Your email address" aria-label="Your email address" required
+                        id="newsletterEmail-contact">
+                    <button type="submit" id="newsletterSubmitBtn-contact">SUBSCRIBE <span
+                            aria-hidden="true">↗</span></button>
+                </form>
+                <p class="newsletter-feedback-contact" id="newsletterFeedback-contact"></p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Site Footer (Matching Site-wide LEADWAY POWDERS UI) -->
+    <footer id="siteFooter">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a class="brand" href="shop.html" aria-label="LEADWAY POWDERS home"><img src="../images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+                <p>Food and beverage powder products from categories featured in the Allwin catalogue.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Shop</h3>
+                <a href="shop.html#catalog">All powder products</a>
+                <a href="shop.html#catalog">Beverage powders</a>
+                <a href="shop.html#catalog">Dessert powders</a>
+                <a href="shop.html#catalog">Specialty powders</a>
+            </div>
+            <div class="footer-col">
+                <h3>Company</h3>
+                <a href="./about.html">About us</a>
+                <a href="contact.html">Contact</a>
+                <a href="about.html#philosophySection">Product categories</a>
+            </div>
+            <div class="footer-col">
+                <h3>Support</h3>
+                <a href="#faqSection">Shipping & returns</a>
+                <a href="./account.html#track">Track Order</a>
+                <a href="./account.html#orders">My Account</a>
+                <a href="#faqSection">FAQ</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 LEADWAY POWDERS.</span>
+            <span>Browse product listings for available information.</span>
+        </div>
+    </footer>
+
+    <!-- Store scripts for live cart drawer, search overlay, and mobile nav -->
+    <script type="module" src="../js/navigation.js"></script>
+    <script type="module" src="../js/cart.js"></script>
+
+    <script>
+        // FAQ Accordion interactivity
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const questionBtn = item.querySelector('.faq-question');
+            if (questionBtn) {
+                questionBtn.addEventListener('click', () => {
+                    const isActive = item.classList.contains('active');
+                    // Close other items
+                    faqItems.forEach(i => {
+                        i.classList.remove('active');
+                        const btn = i.querySelector('.faq-question');
+                        if (btn) btn.setAttribute('aria-expanded', 'false');
+                    });
+                    // Toggle current
+                    if (!isActive) {
+                        item.classList.add('active');
+                        questionBtn.setAttribute('aria-expanded', 'true');
+                    }
+                });
+            }
+        });
+
+        // Contact form submission handling
+        const contactForm = document.getElementById('contactForm');
+        const feedbackBanner = document.getElementById('contactFeedback');
+        const submitBtn = document.getElementById('contactSubmitBtn');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Sending note...';
+                }
+
+                setTimeout(() => {
+                    if (feedbackBanner) {
+                        feedbackBanner.classList.add('show');
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<span>Message Sent</span> <span aria-hidden="true">✓</span>';
+                        submitBtn.style.background = 'var(--accent-dark)';
+                    }
+                    contactForm.reset();
+                }, 500);
+            });
+        }
+    </script>
+
+</body>
+
+</html>

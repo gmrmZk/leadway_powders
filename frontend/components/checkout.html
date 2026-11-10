@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Checkout — LEADWAY POWDERS. Secure contact & delivery details.">
+  <title>Checkout — LEADWAY POWDERS</title>
+  <link rel="icon" type="image/png" href="../images/LandingPageImages/favicon.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/common.css">
+  <link rel="stylesheet" href="./css/checkout.css">
+</head>
+
+<body id="top">
+
+  <!-- Announcement bar -->
+  <div class="announcement">
+    <span>Explore food and beverage powder products</span>
+    <a href="shop.html">Return to the shop <span aria-hidden="true">↗</span></a>
+  </div>
+
+  <!-- Header / navigation -->
+  <header class="site-header">
+    <a class="brand" href="shop.html" aria-label="LEADWAY POWDERS home"><img src="../images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <a href="../index.html">Home</a>
+      <a class="active" href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-button search-button" type="button" aria-label="Search">
+        <span></span>
+      </button>
+      <a class="header-account-link" href="auth.html" id="headerAccountBtn" aria-label="Account">
+        <svg class="account-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="account-btn-label" id="headerAccountText">Account</span>
+      </a>
+      <a class="icon-button bag-button" href="cart.html" aria-label="View shopping bag">
+        <span id="cartCount">0</span>
+      </a>
+      <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false">
+        <i></i><i></i>
+      </button>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a href="../index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="checkout-page-container">
+
+    <!-- Stepper Navigation -->
+    <div class="checkout-page-header">
+      <nav class="checkout-stepper" aria-label="Checkout progress">
+        <a href="cart.html" class="step-item">
+          <span class="step-num">1</span>
+          <span>Shopping Bag</span>
+        </a>
+        <span class="step-divider">/</span>
+        <div class="step-item active" aria-current="step">
+          <span class="step-num">2</span>
+          <span>Information & Shipping</span>
+        </div>
+        <span class="step-divider">/</span>
+        <div class="step-item">
+          <span class="step-num">3</span>
+          <span>Payment</span>
+        </div>
+        <span class="step-divider">/</span>
+        <div class="step-item">
+          <span class="step-num">4</span>
+          <span>Confirmation</span>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="checkout-main-grid" id="checkoutMainGrid">
+
+      <!-- Left Column: Form Details -->
+      <div class="checkout-form-column">
+        <form id="standaloneShippingForm">
+
+          <!-- 1. Contact Information -->
+          <div class="checkout-section-card">
+            <h2>
+              <span>1. Contact Information</span>
+              <span style="font-size: 11px; font-weight: normal; color: var(--muted);">Have an account? <a href="auth.html?return=checkout" id="checkoutSignInLink" style="text-decoration: underline; color: var(--accent-dark);">Sign in</a></span>
+            </h2>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="shippingEmail">Email Address *</label>
+                <input type="email" id="shippingEmail" required placeholder="name@example.com">
+              </div>
+              <div class="form-group">
+                <label for="shippingPhone">Phone Number *</label>
+                <input type="tel" id="shippingPhone" required placeholder="+27 82 000 0000">
+              </div>
+            </div>
+
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); cursor: pointer; margin-top: 4px;">
+              <input type="checkbox" id="newsletterOptIn" checked style="width: auto; accent-color: var(--ink);">
+              <span>Keep me updated on order progress, product news and catalogue availability</span>
+            </label>
+          </div>
+
+          <!-- 2. Delivery Address -->
+          <div class="checkout-section-card">
+            <h2>2. Delivery Address</h2>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="shippingFirstName">First Name *</label>
+                <input type="text" id="shippingFirstName" required placeholder="First name">
+              </div>
+              <div class="form-group">
+                <label for="shippingLastName">Last Name *</label>
+                <input type="text" id="shippingLastName" required placeholder="Vance">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="shippingStreet">Street Address *</label>
+              <input type="text" id="shippingStreet" required placeholder="14 Kloof Street, Gardens">
+            </div>
+
+            <div class="form-group">
+              <label for="shippingApartment">Apartment, suite, or unit (optional)</label>
+              <input type="text" id="shippingApartment" placeholder="Apt 4B, Studio House">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="shippingCity">City *</label>
+                <input type="text" id="shippingCity" required placeholder="Cape Town">
+              </div>
+              <div class="form-group">
+                <label for="shippingPostal">Postal Code *</label>
+                <input type="text" id="shippingPostal" required placeholder="8001">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="shippingProvince">Province *</label>
+              <select id="shippingProvince" required>
+                <option value="Western Cape">Western Cape</option>
+                <option value="Gauteng">Gauteng</option>
+                <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                <option value="Eastern Cape">Eastern Cape</option>
+                <option value="Free State">Free State</option>
+                <option value="Limpopo">Limpopo</option>
+                <option value="Mpumalanga">Mpumalanga</option>
+                <option value="North West">North West</option>
+                <option value="Northern Cape">Northern Cape</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 3. Delivery Method -->
+          <div class="checkout-section-card">
+            <h2>3. Delivery Method</h2>
+            <div class="delivery-options-group">
+              <label class="delivery-option-card selected">
+                <div style="display: flex; align-items: center;">
+                  <input type="radio" name="deliveryOption" value="express" checked>
+                  <div>
+                    <strong style="display: block; font-size: 13px; color: var(--ink);">Delivery option</strong>
+                    <span style="font-size: 11px; color: var(--muted);">Available delivery information is shown during checkout.</span>
+                  </div>
+                </div>
+                <strong id="shippingMethodFee" style="font-size: 12px; color: var(--ink);">Complimentary</strong>
+              </label>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="checkout-btn-row">
+            <button type="submit" class="place-order-btn" style="flex: 1;" id="continueToPaymentBtn">
+              Continue to Payment <span>→</span>
+            </button>
+            <a href="shop.html" class="return-link">← Return to shop</a>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Right Column: Order Summary (Sticky) -->
+      <aside class="checkout-sidebar-sticky" id="checkoutSidebar">
+        <h2>Order Summary</h2>
+        <div class="checkout-items-list" id="checkoutPageItemsList"></div>
+        <p class="cart-stock-message" id="checkoutStockMessage" role="status"></p>
+
+        <div class="promo-row">
+          <input type="text" id="checkoutPagePromoInput" placeholder="Promo code">
+          <button type="button" id="checkoutPagePromoBtn">Apply</button>
+        </div>
+        <div id="checkoutPagePromoFeedback" style="font-size: 11px; min-height: 14px; margin-bottom: 12px;"></div>
+
+        <div class="cart-summary-row">
+          <span>Items Subtotal</span>
+          <strong id="checkoutPageSubtotal">R0</strong>
+        </div>
+        <div class="cart-summary-row" id="checkoutPageDiscountRow" style="display: none;">
+          <span>Privilege Discount (10%)</span>
+          <strong id="checkoutPageDiscount" style="color: var(--success);">-R0</strong>
+        </div>
+        <div class="cart-summary-row">
+          <span>Courier Delivery</span>
+          <strong id="checkoutPageDelivery">Complimentary</strong>
+        </div>
+        <div class="cart-summary-row total-row">
+          <span>Total Due</span>
+          <strong id="checkoutPageTotal">R0</strong>
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); line-height: 1.6;">
+          <p>Review your order total and delivery information before continuing to payment.</p>
+        </div>
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="brand" href="shop.html" aria-label="LEADWAY POWDERS home"><img src="../images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+        <p>Food and beverage powder products from categories featured in the Allwin catalogue.</p>
+      </div>
+      <div class="footer-col">
+        <h3>Shop</h3>
+        <a href="shop.html#catalog">Powder products</a>
+        <a href="shop.html#catalog">Beverage powders</a>
+        <a href="shop.html#catalog">Dessert powders</a>
+      </div>
+      <div class="footer-col">
+        <h3>Company</h3>
+        <a href="shop.html#story">About us</a>
+        <a href="shop.html#newsletter">Contact</a>
+        <a href="shop.html#newsletter">Journal</a>
+      </div>
+      <div class="footer-col">
+        <h3>Support</h3>
+        <a href="shop.html#catalog">Shipping & returns</a>
+        <a href="./account.html#track">Track Order</a>
+        <a href="./account.html#orders">My Account</a>
+        <a href="shop.html#newsletter">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 LEADWAY POWDERS.</span>
+      <span>Food and beverage powder products from the Allwin catalogue.</span>
+    </div>
+  </footer>
+
+  <script type="module" src="../js/cart.js"></script>
+  <script type="module" src="../js/payment.js"></script>
+</body>
+
+</html>

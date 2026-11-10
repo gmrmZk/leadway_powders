@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your LEADWAY POWDERS account, purchase history and delivery details.">
+    <title>Account & Order Tracking — LEADWAY POWDERS</title>
+    <link rel="icon" type="image/png" href="../images/LandingPageImages/favicon.png?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/account.css">
+</head>
+
+<body id="top">
+
+    <!-- Top announcement bar -->
+    <div class="announcement">
+        <span>Explore food and beverage powder products</span>
+        <a href="shop.html#catalog">Browse products <span aria-hidden="true">&#8599;</span></a>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="site-header" id="header">
+        <a class="brand" href="../index.html" aria-label="LEADWAY POWDERS home"><img src="../images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+
+        <nav class="desktop-nav" aria-label="Primary navigation">
+            <a href="../index.html">Home</a>
+            <a href="./shop.html">Shop</a>
+            <a href="./about.html">About</a>
+            <a href="./contact.html">Contact</a>
+        </nav>
+
+        <div class="header-actions">
+            <button class="icon-button search-button" type="button" aria-label="Search collection">
+                <span></span>
+            </button>
+            <a class="header-account-link active" href="auth.html" id="headerAccountBtn" aria-label="Account">
+                <svg class="account-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span class="account-btn-label" id="headerAccountText">Account</span>
+            </a>
+            <a class="icon-button bag-button" href="cart.html" aria-label="Shopping bag">
+                <span id="cartCount">0</span>
+            </a>
+            <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false">
+                <i></i><i></i>
+            </button>
+        </div>
+
+        <!-- Mobile slide-down nav -->
+        <nav class="mobile-nav" aria-label="Mobile navigation">
+            <a href="../index.html">Home</a>
+            <a href="./shop.html">Shop</a>
+            <a href="./about.html">About</a>
+            <a href="./contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <main class="account-page-container">
+
+        <!-- Page Header -->
+        <div class="account-hero-header">
+            <div>
+                <p class="eyebrow" id="accountEyebrow">Client Services</p>
+                <h1 id="accountPageHeading">My Account & Orders</h1>
+                <p id="accountPageSub">Manage your personal details and track live courier shipments.</p>
+            </div>
+            <div id="quickHeaderActions"></div>
+        </div>
+
+        <!-- Guest / Not Logged In View -->
+        <div id="accountGuestView" class="auth-guest-grid" style="display: none;">
+            <div class="guest-card">
+                <h2>Client Sign In</h2>
+                <p>Sign in to view your purchase history, manage delivery details and review tracking information when available.</p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <a href="auth.html" class="primary-button" style="text-align: center;">Sign In or Register &#8599;</a>
+                    <button type="button" class="order-btn-outline" id="guestDemoLoginBtn" style="width: 100%; padding: 12px;">
+                        Quick Demo Sign-In
+                    </button>
+                </div>
+            </div>
+            <div class="guest-card">
+                <h2>Track Courier Parcel</h2>
+                <p>Enter an order reference to view the tracking information available for that order.</p>
+                <form id="guestTrackForm" style="display: flex; flex-direction: column; gap: 12px;">
+                    <input type="text" id="guestTrackInput" placeholder="Order reference or tracking number" style="padding: 12px 14px; border: 1px solid var(--line); border-radius: 4px; font-family: inherit; font-size: 13px;" required>
+                    <button type="submit" class="primary-button" style="text-align: center;">Track Parcel &#8599;</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Authenticated Dashboard View -->
+        <div id="accountDashboardView" class="account-grid-layout" style="display: none;">
+            <!-- Left Sidebar -->
+            <aside class="account-sidebar">
+                <div class="account-user-card">
+                    <div class="user-avatar-large" id="sidebarAvatar">E</div>
+                    <h3 id="sidebarFullName">Customer name</h3>
+                    <p class="user-email" id="sidebarEmail">Email address</p>
+                    <span class="member-tag" id="sidebarMemberTier">LEADWAY POWDERS Customer</span>
+                </div>
+
+                <div class="account-nav-list">
+                    <button type="button" class="account-nav-item active" id="navOrdersTab">
+                        <span>Orders & Deliveries</span>
+                        <span class="badge" id="navOrdersBadge"></span>
+                    </button>
+                    <button type="button" class="account-nav-item" id="navNotificationsTab">
+                        <span>Notifications</span>
+                        <span class="badge notifications-unread-badge" id="navNotificationsBadge" aria-label="Unread notifications" hidden></span>
+                    </button>
+                    <button type="button" class="account-nav-item" id="navProfileTab">
+                        <span>Delivery Address</span>
+                    </button>
+                    <button type="button" class="account-nav-item logout" id="dashboardSignOutBtn">
+                        Sign Out
+                    </button>
+                </div>
+
+                <!-- Default Address Info Box -->
+                <div style="padding: 20px 24px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); line-height: 1.6;">
+                    <strong style="display: block; color: var(--ink); text-transform: uppercase; letter-spacing: .08em; font-size: 11px; margin-bottom: 8px;">Delivery Details</strong>
+                    <div id="sidebarAddressName" style="font-weight: 600; color: var(--ink);">Customer name</div>
+                    <div id="sidebarAddressPhone">Phone number</div>
+                    <div id="sidebarAddressStreet">Delivery address</div>
+                    <div id="sidebarAddressCity">Location not provided</div>
+                    <div style="margin-top: 10px; font-size: 11px; color: var(--accent-dark);">Order updates appear when available.</div>
+                </div>
+
+                <!-- Quick Track Widget -->
+                <div style="padding: 20px 24px; border-top: 1px solid var(--line); background: var(--cream);">
+                    <strong style="display: block; color: var(--ink); text-transform: uppercase; letter-spacing: .08em; font-size: 11px; margin-bottom: 8px;">Track Any Parcel</strong>
+                    <form id="sidebarQuickTrackForm" style="display: flex; gap: 6px;">
+                        <input type="text" id="sidebarQuickTrackInput" placeholder="Order reference" style="flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; font-size: 12px;">
+                        <button type="submit" class="order-btn-outline" style="padding: 8px 12px; font-size: 11px;">Track</button>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <section class="account-main-content">
+                <!-- Orders Tab Pane -->
+                <div id="paneOrders">
+                    <div class="tab-pane-title">
+                        <h2>Orders & Tracking</h2>
+                        <span id="ordersSummaryCount" style="font-size: 13px; color: var(--muted);">Orders</span>
+                    </div>
+
+                    <!-- Empty orders placeholder -->
+                    <div id="ordersEmptyState" class="orders-empty-state" style="display: none;">
+                        <div class="orders-empty-icon">&#128722;</div>
+                        <h3>No Orders Placed Yet</h3>
+                        <p>Your order history and tracking details appear here when available.</p>
+                        <a href="shop.html" class="primary-button">Browse Products &#8599;</a>
+                    </div>
+
+                    <!-- Orders List -->
+                    <div class="orders-list-container" id="ordersListContainer">
+                        <!-- Cloned cleanly from templates via account.js -->
+                    </div>
+                </div>
+
+                <div id="paneNotifications" style="display: none;">
+                    <div class="tab-pane-title account-notification-pane-header">
+                        <h2>Notifications</h2>
+                        <div class="account-notification-toolbar">
+                            <span class="account-notification-caption" id="accountNotificationCount">Notifications</span>
+                            <button type="button" class="account-notification-control" id="markAllUserNotificationsRead" disabled>Mark all read</button>
+                            <button type="button" class="account-notification-control is-clear" id="clearAllUserNotifications" disabled>Clear all</button>
+                        </div>
+                    </div>
+                    <p class="account-notification-feedback" id="accountNotificationFeedback" role="status" aria-live="polite"></p>
+                    <div class="account-notification-list" id="accountNotificationsList" aria-live="polite"></div>
+                </div>
+
+                <!-- Address Tab Pane -->
+                <div id="paneProfile" style="display: none;">
+                    <div class="tab-pane-title">
+                        <h2>Profile & Delivery Details</h2>
+                    </div>
+                    <form id="updateProfileForm" class="profile-form-grid" novalidate>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Full Name</label>
+                            <input type="text" id="profFullName" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px;" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Email Address</label>
+                            <input type="email" id="profEmail" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px;" readonly>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Phone (Courier SMS)</label>
+                            <input type="tel" id="profPhone" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px;" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Street Address</label>
+                            <input type="text" id="profStreet" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">City</label>
+                            <input type="text" id="profCity" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">Province</label>
+                            <input type="text" id="profProvince" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px;">
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <button type="submit" class="primary-button" style="padding: 12px 24px;">Save Delivery Details</button>
+                            <button type="button" id="deleteProfileBtn" class="profile-delete-button">Delete Profile</button>
+                            <span id="saveProfileMsg" style="margin-left: 14px; font-size: 12px; color: #1e6b37; display: none;">Saved successfully!</span>
+                        </div>
+                    </form>
+                    <dialog id="deleteProfileDialog" class="account-confirm-dialog" aria-labelledby="deleteProfileTitle">
+                        <div class="account-confirm-content">
+                            <h3 id="deleteProfileTitle">Delete your profile?</h3>
+                            <p>This permanently deletes your account. You will be signed out, and this action cannot be undone.</p>
+                            <p id="deleteProfileError" class="account-confirm-error" aria-live="polite"></p>
+                            <div class="account-confirm-actions">
+                                <button type="button" id="cancelDeleteProfileBtn" class="account-confirm-cancel">Keep Profile</button>
+                                <button type="button" id="confirmDeleteProfileBtn" class="account-confirm-delete">Delete Profile</button>
+                            </div>
+                        </div>
+                    </dialog>
+                </div>
+            </section>
+        </div>
+
+        <!-- Template for Order Cards: allows cloning cleanly without innerHTML -->
+        <template id="orderCardTemplate">
+            <details class="order-card">
+                <summary class="order-card-header">
+                    <div class="order-meta-group">
+                        <div class="order-meta-item">
+                            <span>Order Reference</span>
+                            <strong class="card-order-id"></strong>
+                        </div>
+                        <div class="order-meta-item">
+                            <span>Placed On</span>
+                            <strong class="card-order-date"></strong>
+                        </div>
+                        <div class="order-meta-item">
+                            <span>Tracking Number</span>
+                            <strong class="card-order-tracking"></strong>
+                        </div>
+                        <div class="order-meta-item">
+                            <span>Payment Status</span>
+                            <strong class="card-payment-status"></strong>
+                        </div>
+                    </div>
+                    <div class="order-status-badge in-transit">
+                        <span class="status-dot"></span>
+                        <span class="card-status-text">In Transit</span>
+                    </div>
+                    <span class="order-card-chevron" aria-hidden="true">⌄</span>
+                </summary>
+
+                <div class="order-card-body">
+                    <div class="order-items-grid card-items-list">
+                        <!-- item rows cloned from orderItemRowTemplate -->
+                    </div>
+                </div>
+
+                <div class="order-tracking-collapse open">
+                    <div class="tracking-header-info">
+                        <div class="carrier-pill">
+                            Delivery Provider: <strong class="card-courier-name">Not specified</strong>
+                        </div>
+                        <div class="carrier-pill">
+                            Current Location: <strong class="card-tracking-location">Awaiting dispatch</strong>
+                        </div>
+                        <div class="carrier-pill">
+                            Estimated Delivery: <strong class="card-est-delivery"></strong>
+                        </div>
+                    </div>
+
+                    <div class="tracking-stepper">
+                        <div class="tracking-step completed">
+                            <div class="step-marker">&#10003;</div>
+                            <div class="step-title">Order Placed</div>
+                            <div class="step-time">Confirmed</div>
+                        </div>
+                        <div class="tracking-step completed">
+                            <div class="step-marker">&#10003;</div>
+                            <div class="step-title">Atelier Packaging</div>
+                            <div class="step-time">Quality Verified</div>
+                        </div>
+                        <div class="tracking-step current">
+                            <div class="step-marker">3</div>
+                            <div class="step-title">In Express Transit</div>
+                            <div class="step-time">Order update</div>
+                        </div>
+                        <div class="tracking-step">
+                            <div class="step-marker">4</div>
+                            <div class="step-title">Delivered</div>
+                            <div class="step-time">Destination</div>
+                        </div>
+                    </div>
+
+                    <div class="delivery-address-summary">
+                        Order tracking information is shown when available. <a href="./orders.html" style="color: var(--ink); text-decoration: underline;">View order tracking</a>.
+                    </div>
+                </div>
+
+                <footer class="order-card-footer">
+                    <div class="order-total-display">
+                        Total Amount: <strong class="card-order-total"></strong>
+                    </div>
+                    <div class="order-actions-group">
+                        <a href="" class="order-btn-outline card-track-btn">View Tracking &#8599;</a>
+                        <button type="button" class="order-btn-outline card-cancel-btn">Cancel order</button>
+                        <button type="button" class="order-btn-outline card-return-btn">Request return</button>
+                        <span class="card-order-action-message" role="status" aria-live="polite"></span>
+                    </div>
+                    <form class="return-request-form" hidden>
+                        <label class="return-request-label">Reason for return
+                            <textarea class="return-reason-input" minlength="3" maxlength="1000" required rows="3" placeholder="Tell us why you are returning this order."></textarea>
+                        </label>
+                        <div class="return-request-actions">
+                            <button type="button" class="order-btn-outline cancel-return-form-btn">Keep order</button>
+                            <button type="submit" class="order-btn-outline submit-return-btn">Send return request</button>
+                        </div>
+                    </form>
+                </footer>
+            </details>
+        </template>
+
+        <!-- Template for Order Item Row -->
+        <template id="orderItemRowTemplate">
+            <div class="order-item-row">
+                <div class="order-item-visual">
+                    <img src="" alt="" class="order-item-thumb">
+                    <div class="order-item-desc">
+                        <h4 class="card-item-title"></h4>
+                        <span class="card-item-meta"></span>
+                    </div>
+                </div>
+                <div class="order-item-price card-item-price"></div>
+            </div>
+        </template>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a class="brand" href="../index.html" aria-label="LEADWAY POWDERS home"><img src="../images/LandingPageImages/logo.png" alt="LEADWAY POWDERS"></a>
+                <p>Food and beverage powder products from categories featured in the Allwin catalogue.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Client Care</h4>
+                <a href="./account.html#orders">My Orders</a>
+                <a href="./account.html#track">Track Express Delivery</a>
+                <a href="./contact.html">Shipping & Returns</a>
+                <a href="./contact.html#faq">Frequently Asked Questions</a>
+            </div>
+            <div class="footer-col">
+                <h4>Collections</h4>
+                <a href="./shop.html">Beverage Powders</a>
+                <a href="./shop.html">Dessert Powders</a>
+                <a href="./shop.html">Specialty Powders</a>
+                <a href="./shop.html">Premix Products</a>
+            </div>
+            <div class="footer-col">
+                <h4>The House</h4>
+                <a href="./about.html">Our Philosophy</a>
+                <a href="./contact.html">Contact us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 LEADWAY POWDERS.</p>
+            <div class="footer-payments">
+                <span>Secure Payments via Ozow, Visa, Mastercard & SnapScan</span>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/cart.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/account.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,254 @@
+/**
+ * Velora Studio Admin - Main Application Coordinator (js/app.js)
+ * Modular orchestrator for routing, tab switching, and event binding.
+ * Pure DOM implementation with NO innerHTML.
+ */
+
+window.currentTab = 'dashboard';
+
+window.switchTab = function(tabId) {
+  window.currentTab = tabId;
+
+  // Sidebar navigation active state
+  document.querySelectorAll('.nav-item[data-tab]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+  });
+
+  // Views toggling
+  const views = {
+    dashboard: document.getElementById('overviewMainView'),
+    orders: document.getElementById('ordersMainView'),
+    drivers: document.getElementById('driversMainView'),
+    returns: document.getElementById('returnsMainView'),
+    inventory: document.getElementById('inventoryMainView'),
+    customers: document.getElementById('customersMainView'),
+    payments: document.getElementById('paymentsMainView'),
+    notifications: document.getElementById('notificationsMainView'),
+    settings: document.getElementById('settingsMainView')
+  };
+
+  Object.entries(views).forEach(([key, el]) => {
+    if (el) el.style.display = key === tabId ? 'block' : 'none';
+  });
+
+  // Topbar title update
+  const topbarTitle = document.getElementById('currentViewTitle');
+  if (topbarTitle) {
+    const titles = {
+      dashboard: 'Store Overview',
+      orders: 'Orders',
+      drivers: 'Drivers',
+      returns: 'Returns',
+      inventory: 'Catalog & Stock',
+      customers: 'Client Registry',
+      payments: 'Payments & Settlements',
+      notifications: 'Notifications',
+      settings: 'Operations Settings'
+    };
+    topbarTitle.textContent = titles[tabId] || (tabId.charAt(0).toUpperCase() + tabId.slice(1));
+  }
+
+  // Trigger view controller render
+  window.refreshCurrentView();
+
+  // Close mobile sidebar if open
+  window.closeMobileSidebar();
+};
+
+window._realSwitchTab = window.switchTab;
+
+// Flush any queued switchTab calls from before app.js was ready
+if (Array.isArray(window._earlyActionQueue) && window._earlyActionQueue.length > 0) {
+  const queue = window._earlyActionQueue.slice();
+  window._earlyActionQueue = [];
+  queue.forEach(fn => { try { fn(); } catch (e) {} });
+}
+
+window.refreshCurrentView = function() {
+  const tab = window.currentTab;
+  if (tab === 'dashboard' && typeof window.renderOverviewView === 'function') {
+    window.renderOverviewView();
+    if (typeof window.fetchOrdersFromDb === 'function') {
+      window.fetchOrdersFromDb();
+    }
+    if (typeof window.fetchDriversFromDb === 'function') {
+      window.fetchDriversFromDb();
+    }
+    if (typeof window.fetchReturnsFromDb === 'function') {
+      window.fetchReturnsFromDb();
+    }
+  } else if (tab === 'orders') {
+    if (typeof window.renderKPICards === 'function') window.renderKPICards();
+    if (typeof window.renderOrdersTable === 'function') window.renderOrdersTable();
+    if (typeof window.fetchOrdersFromDb === 'function') {
+      window.fetchOrdersFromDb();
+    }
+    if (typeof window.fetchDriversFromDb === 'function') {
+      window.fetchDriversFromDb();
+    }
+  } else if (tab === 'drivers') {
+    if (typeof window.renderDriversView === 'function') window.renderDriversView();
+    if (typeof window.fetchDriversFromDb === 'function') window.fetchDriversFromDb();
+  } else if (tab === 'returns' && typeof window.renderReturnsView === 'function') {
+    window.renderReturnsView();
+    if (typeof window.fetchReturnsFromDb === 'function') {
+      window.fetchReturnsFromDb();
+    }
+  } else if (tab === 'inventory' && typeof window.renderInventoryView === 'function') {
+    window.renderInventoryView();
+  } else if (tab === 'customers') {
+    if (typeof window.renderCustomersView === 'function') {
+      window.renderCustomersView();
+    }
+    if (typeof window.fetchCustomersFromDb === 'function') {
+      window.fetchCustomersFromDb();
+    }
+  } else if (tab === 'payments' && typeof window.renderPaymentsView === 'function') {
+    window.renderPaymentsView();
+    if (typeof window.fetchPaymentsFromDb === 'function') {
+      window.fetchPaymentsFromDb();
+    }
+  } else if (tab === 'notifications' && typeof window.renderNotificationsView === 'function') {
+    window.renderNotificationsView();
+    if (typeof window.fetchNotifications === 'function') {
+      window.fetchNotifications();
+    }
+  } else if (tab === 'settings' && typeof window.renderSettingsView === 'function') {
+    window.renderSettingsView();
+  }
+};
+
+window.toggleMobileSidebar = function(e) {
+  if (e) {
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+    if (typeof e.stopPropagation === 'function') e.stopPropagation();
+  }
+  const sidebar = document.getElementById('dashboardSidebar');
+  const backdrop = document.getElementById('mobileSidebarBackdrop');
+  const toggleBtn = document.getElementById('mobileMenuToggle');
+  if (!sidebar) return;
+
+  const isOpen = sidebar.classList.contains('mobile-open') || sidebar.classList.contains('open');
+  if (isOpen) {
+    window.closeMobileSidebar();
+  } else {
+    sidebar.classList.add('mobile-open', 'open');
+    if (backdrop) backdrop.classList.add('active');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('sidebar-drawer-active');
+  }
+};
+
+window.closeMobileSidebar = function() {
+  const sidebar = document.getElementById('dashboardSidebar');
+  const backdrop = document.getElementById('mobileSidebarBackdrop');
+  const toggleBtn = document.getElementById('mobileMenuToggle');
+  if (sidebar) sidebar.classList.remove('mobile-open', 'open');
+  if (backdrop) backdrop.classList.remove('active');
+  if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('sidebar-drawer-active');
+};
+
+window.initApp = function() {
+  // Mobile toggle button
+  const mobileToggle = document.getElementById('mobileMenuToggle');
+  if (mobileToggle && !mobileToggle._hasAppClickListener) {
+    mobileToggle._hasAppClickListener = true;
+    mobileToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.toggleMobileSidebar(e);
+    });
+  }
+
+  const mobileBackdrop = document.getElementById('mobileSidebarBackdrop');
+  if (mobileBackdrop && !mobileBackdrop._hasAppClickListener) {
+    mobileBackdrop._hasAppClickListener = true;
+    mobileBackdrop.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.closeMobileSidebar();
+    });
+    mobileBackdrop.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      window.closeMobileSidebar();
+    }, { passive: false });
+  }
+
+  // Auto-close sidebar on mobile/tablet when main content area is clicked
+  const mainContent = document.querySelector('.dashboard-main');
+  if (mainContent && !mainContent._hasAppClickListener) {
+    mainContent._hasAppClickListener = true;
+    mainContent.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('dashboardSidebar');
+      const toggleBtn = document.getElementById('mobileMenuToggle');
+      if (sidebar && (sidebar.classList.contains('mobile-open') || sidebar.classList.contains('open'))) {
+        if (toggleBtn && (toggleBtn === e.target || toggleBtn.contains(e.target))) return;
+        window.closeMobileSidebar();
+      }
+    });
+  }
+
+  // Auto-close if clicked anywhere outside the sidebar
+  if (!window._hasAppDocClickListener) {
+    window._hasAppDocClickListener = true;
+    document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('dashboardSidebar');
+      const toggleBtn = document.getElementById('mobileMenuToggle');
+      if (sidebar && (sidebar.classList.contains('mobile-open') || sidebar.classList.contains('open'))) {
+        if (toggleBtn && (toggleBtn === e.target || toggleBtn.contains(e.target))) return;
+        if (!sidebar.contains(e.target)) {
+          window.closeMobileSidebar();
+        }
+      }
+    });
+
+    // Close with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        window.closeMobileSidebar();
+      }
+    });
+
+    // Close sidebar on viewport resize to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        window.closeMobileSidebar();
+      }
+    });
+
+    window.addEventListener('orientationchange', () => {
+      window.closeMobileSidebar();
+    });
+  }
+
+  // Bind all nav items with data-tab (they automatically close the mobile sidebar on navigation)
+  document.querySelectorAll('.nav-item[data-tab]').forEach(btn => {
+    if (!btn._hasAppNavClickListener) {
+      btn._hasAppNavClickListener = true;
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-tab');
+        if (tab) window.switchTab(tab);
+      });
+    }
+  });
+
+  // Topbar notification button -> Navigate to Notifications Page
+  const headerNotifBtn = document.getElementById('headerNotificationBtn');
+  if (headerNotifBtn && !headerNotifBtn._hasAppNotifClickListener) {
+    headerNotifBtn._hasAppNotifClickListener = true;
+    headerNotifBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.switchTab('notifications');
+    });
+  }
+
+  // Initial render of default view
+  window.switchTab(window.currentTab || 'dashboard');
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', window.initApp);
+} else {
+  window.initApp();
+}
